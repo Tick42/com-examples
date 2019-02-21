@@ -28,7 +28,6 @@ type
     memLog: TMemo;
     procedure BtnGlueInitClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure FormDestroy(Sender: TObject);
     procedure btnGlueInvokeClick(Sender: TObject);
     procedure btnSubscribeClick(Sender: TObject);
     procedure btnPushClick(Sender: TObject);
@@ -117,8 +116,8 @@ end;
 function TForm1.HandleConnectionStatus(State: GlueState;
   const Message: WideString; date: Int64): HResult;
 begin
-  memLog.Lines.Add(DateTimeToStr(GlueTimeToDateTime(date)) +
-    ' UTC: ' + Message);
+  memLog.Lines.Add(DateTimeToStr(GlueTimeToDateTime(date)) + ' UTC: ' +
+    Message);
   Result := S_OK;
 end;
 
@@ -302,12 +301,6 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   FMethods := TStringList.Create;
-end;
-
-procedure TForm1.FormDestroy(Sender: TObject);
-begin
-  glueWindow.Unregister;
-  G42.Stop;
 end;
 
 function TForm1.HandleWindowDestroyed(const glueWindow: IGlueWindow)
