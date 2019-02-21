@@ -118,7 +118,7 @@ function TForm1.HandleConnectionStatus(State: GlueState;
   const Message: WideString; date: Int64): HResult;
 begin
   memLog.Lines.Add(DateTimeToStr(GlueTimeToDateTime(date)) +
-    ' UTC: Connection is ' + Message);
+    ' UTC: ' + Message);
   Result := S_OK;
 end;
 
@@ -504,8 +504,13 @@ begin
 
   G42.Start(inst);
 
-  glueWindow := G42.RegisterGlueWindow(self.Handle, self);
-  glueWindow.SetTitle('Delphi Glue Window');
+  try
+    glueWindow := G42.RegisterGlueWindow(self.Handle, self);
+    glueWindow.SetTitle('Delphi Glue Window');
+  except
+    on E: Exception do
+      ShowMessage(E.ClassName + ' error raised, with message : ' + E.Message);
+  end;
 
   G42.RegisterMethod('GlueDelphi', self, '', '', nil);
   G42.RegisterStream('GlueDelphiStream', self, '', '', nil, stream);
@@ -523,7 +528,6 @@ procedure TForm1.ListBox1DblClick(Sender: TObject);
 var
   I: Integer;
   gm: GlueMethod;
-  target: GlueMethod;
 begin
   if ListBox1.ItemIndex >= 0 then
   begin
