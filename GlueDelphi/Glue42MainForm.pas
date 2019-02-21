@@ -224,6 +224,7 @@ var
 begin
   ZeroMemory(@r, sizeof(r));
   callback.Accept('', r);
+  Result := S_OK;
 end;
 
 function TForm1.HandleGlueContext(context: GlueContext;
@@ -486,6 +487,7 @@ end;
 function TForm1.HandleException(const ex: _Exception): HResult;
 begin
   // NOTE: log exception
+  Result := S_OK;
 end;
 
 procedure TForm1.BtnGlueInitClick(Sender: TObject);

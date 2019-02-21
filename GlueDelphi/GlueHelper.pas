@@ -423,23 +423,24 @@ function TGlueStreamHandler.HandleStreamData(stream: GlueMethod;
 data: PSafeArray): HResult;
 begin
   FDataLambda(stream, TSafeArrayExpander<GlueContextValue>.AsArray(data), data);
+  Result := S_OK;
 end;
 
 function TGlueStreamHandler.HandleStreamStatus(stream: GlueMethod;
 State: GlueStreamState; const Message: WideString; dateTime: Int64): HResult;
 begin
-
+  Result := S_OK;
 end;
 
 function TGlueStreamHandler.StreamClosed(stream: GlueMethod): HResult;
 begin
-
+  Result := S_OK;
 end;
 
 function TGlueStreamHandler.StreamOpened(stream: GlueMethod;
 const glueStreamSubscription: IGlueStreamSubscription): HResult;
 begin
-
+  Result := S_OK;
 end;
 
 { TSafeArrayExpander<T> }
@@ -521,6 +522,8 @@ begin
     fUpdatedLambda(context, TSafeArrayExpander<GlueContextValue>.AsArray
       (context.GetData));
   end;
+
+  Result := S_OK;
 end;
 
 function TGlueContextHandler.HandleContextUpdate(const contextUpdate
@@ -547,6 +550,8 @@ begin
     fUpdatedLambda(contextUpdate.GetContext,
       TSafeArrayExpander<GlueContextValue>.AsArray(contextUpdate.GetUpdated));
   end;
+
+  Result := S_OK;
 end;
 
 { TGlueRequestHandler }
@@ -564,6 +569,8 @@ const resultCallback: IGlueServerMethodResultCallback): HResult;
 begin
   FHandlerLambda(Method, caller, TSafeArrayExpander<GlueContextValue>.AsArray
     (requestValues), resultCallback);
+
+  Result := S_OK;
 end;
 
 end.
