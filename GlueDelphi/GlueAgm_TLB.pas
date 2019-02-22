@@ -12,10 +12,10 @@ unit GlueAgm_TLB;
 // ************************************************************************ //
 
 // $Rev: 52393 $
-// File generated on 2019-02-20 5:31:35 PM from Type Library described below.
+// File generated on 2019-02-21 5:50:17 PM from Type Library described below.
 
 // ************************************************************************  //
-// Type Lib: A:\Work\stash\com-vba-agm\GlueAgm\GlueAgm\bin\Debug\GlueAgm.tlb (1)
+// Type Lib: C:\Users\Xaoc\AppData\Local\Tick42\GlueSDK\GlueCOM\GlueAgm.dll (1)
 // LIBID: {87131215-BF8F-4C80-8B37-8A94EF9F0771}
 // LCID: 0
 // Helpfile: 

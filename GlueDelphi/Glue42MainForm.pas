@@ -1,3 +1,10 @@
+/// Sample Delphi VCL Form application demonstrating Glue COM usage:
+/// - Registering Glue Windows (sticky)
+/// - Registering methods, receiving invocations and yielding results
+/// - Registering streams, accepting subscriptions and pushing data
+/// - Reacting on Glue Window channel changes
+/// - Consuming Glue contexts
+
 unit Glue42MainForm;
 
 interface
@@ -11,7 +18,7 @@ uses
 
 type
   TForm1 = class(TForm, IGlueEvents, IGlueWindowEventHandler,
-    IGlueRequestHandler, IGlueSubscriptionHandler)
+    IGlueSubscriptionHandler)
     GroupBox1: TGroupBox;
     Edit1: TEdit;
     ListBox1: TListBox;
@@ -42,6 +49,8 @@ type
     FMethods: TStringList;
     function CreateSampleArgs: PSafeArray;
   protected
+    // implements IGlueEvents - general status changes and other
+    // points of interest that occur in Glue42 environment
     function HandleConnectionStatus(State: GlueState; const Message: WideString;
       date: Int64): HResult; stdcall;
     function HandleInstanceStatus(Instance: GlueInstance; active: WordBool)
@@ -52,6 +61,8 @@ type
       : HResult; stdcall;
     function HandleException(const ex: _Exception): HResult; stdcall;
 
+    // implements IGlueWindowEventHandler - channel updates for
+    // registered Glue Window
     function HandleChannelData(const glueWindow: IGlueWindow;
       const channelUpdate: IGlueContextUpdate): HResult; stdcall;
     function HandleChannelLeft(const glueWindow: IGlueWindow;
@@ -59,16 +70,20 @@ type
     function HandleWindowDestroyed(const glueWindow: IGlueWindow)
       : HResult; stdcall;
 
-    function HandleInvocationRequest(Method: GlueMethod; caller: GlueInstance;
-      requestValues: PSafeArray;
-      const resultCallback: IGlueServerMethodResultCallback): HResult; stdcall;
+    // implements IGlueSubscriptionHandler - Glue stream publishing side
+    // can accept subscription requests
 
+    // reject/accept subscription requests
     function HandleSubscriptionRequest(stream: GlueMethod; caller: GlueInstance;
       requestValues: PSafeArray;
       const callback: IGlueServerSubscriptionCallback): HResult; stdcall;
+
+    // notification that there's new subscriber
     function HandleSubscriber(subscriberInstance: GlueInstance;
       const glueStreamSubscriber: IGlueStreamSubscriber;
       requestValues: PSafeArray): HResult; stdcall;
+
+    // notification that the stream lost a subscriber
     function HandleSubscriberLost(streamSubscriber: GlueInstance;
       const glueStreamSubscriber: IGlueStreamSubscriber): HResult; stdcall;
   public
@@ -83,6 +98,7 @@ type
 var
   Form1: TForm1;
 
+  // expands Array of GlueContextValue into Tree nodes for better visualization
 procedure BuildContextValueTree(arr: TArray<GlueContextValue>; tree: TTreeNodes;
   node: TTreeNode);
 procedure BuildValueTree(name: string; gv: GlueValue; tree: TTreeNodes;
@@ -94,24 +110,6 @@ uses
   StrUtils;
 
 {$R *.dfm}
-
-function TForm1.HandleInvocationRequest(Method: GlueMethod;
-  caller: GlueInstance; requestValues: PSafeArray;
-  const resultCallback: IGlueServerMethodResultCallback): HResult; stdcall;
-var
-  gr: GlueResult;
-begin
-  memLog.Lines.Add('Method ' + Method.name + ' invoked by ' +
-    caller.ApplicationName);
-  TraverseGlueContextValuesSafeArray(requestValues, memLog.Lines);
-  ZeroMemory(@gr, sizeof(gr));
-  gr.Status := AgmMethodInvocationStatus_Succeeded;
-  gr.Values := requestValues;
-  gr.Message := 'Here, take it';
-  resultCallback.SendResult(gr);
-
-  Result := S_OK;
-end;
 
 function TForm1.HandleConnectionStatus(State: GlueState;
   const Message: WideString; date: Int64): HResult;
@@ -254,10 +252,12 @@ begin
     end);
   args := CreateSampleArgs;
 
+  // optionally pass a target filter selection - so e.g. only call app1, app2, app3
   // SetLength(targets, 1);
   // ZeroMemory(@targets[0], sizeof(targets[0]));
   // targets[0].ApplicationName := 'SomeApp';
 
+  // invoke ALL methods matching this name and handle the result in the lambda
   G42.InvokeMethods(edtMethodName.Text, args, nil, true,
     AgmInstanceIdentity_None, handler, 5000);
 
@@ -282,6 +282,8 @@ begin
 
       TraverseGlueContextValuesSafeArray(data, memLog.Lines);
     end);
+
+  // make a stream subscription and handle the streaming data with a lambda
   G42.SubscribeStreams(edtStreamName.Text, nil, nil, false,
     AgmInstanceIdentity_None, sub, -1);
 end;
@@ -306,6 +308,7 @@ end;
 function TForm1.HandleWindowDestroyed(const glueWindow: IGlueWindow)
   : HResult; stdcall;
 begin
+  // Glue Window Manager said that this window is destroyed, so clean up
   Close;
   Result := S_OK;
 end;
@@ -487,32 +490,64 @@ procedure TForm1.BtnGlueInitClick(Sender: TObject);
 var
   inst: GlueInstance;
 begin
+  // create the Glue42 com object
   G42 := CoGlue42.Create() as IGlue42;
 
+  // subscribe to all events
   G42.Subscribe(self);
 
+  // configure own identity
   ZeroMemory(@inst, sizeof(inst));
   inst.ApplicationName := 'DelphiRulez';
   inst.Metadata := nil;
 
+  // init and start the Glue42
   G42.Start(inst);
 
   try
+    // register VCL form window as Glue Window so it will become sticky,
+    // participate in Glue Groups and consume Glue channels
     glueWindow := G42.RegisterGlueWindow(self.Handle, self);
+
+    // change the Glue Window title
     glueWindow.SetTitle('Delphi Glue Window');
   except
     on E: Exception do
       ShowMessage(E.ClassName + ' error raised, with message : ' + E.Message);
   end;
 
-  G42.RegisterMethod('GlueDelphi', self, '', '', nil);
+  // register invocation endpoint - so any other Glue peer can invoke this
+  // this example shows usage of lambda handler
+  // or implement IGlueRequestHandler in the VCL Form and pass self instead
+  G42.RegisterMethod('GlueDelphi', TGlueRequestHandler.Create(
+    procedure(Method: GlueMethod; caller: GlueInstance;
+      requestArgs: TArray<GlueContextValue>;
+      resultCallback: IGlueServerMethodResultCallback)
+    var
+      gr: GlueResult;
+    begin
+      memLog.Lines.Add('Method ' + Method.name + ' invoked by ' +
+        caller.ApplicationName);
+
+      TraverseGlueContextValues(requestArgs, memLog.Lines);
+      ZeroMemory(@gr, sizeof(gr));
+      gr.Status := AgmMethodInvocationStatus_Succeeded;
+      gr.Values := CreateContextValues(requestArgs);
+      gr.Message := 'Here, take it';
+      resultCallback.SendResult(gr);
+
+    end), '', '', nil);
+
+  // register stream - publishing side, passing self as IGlueSubscriptionHandler
   G42.RegisterStream('GlueDelphiStream', self, '', '', nil, stream);
 
   memLog.Lines.Add('InstanceId is ' + G42.GetInstance.InstanceId);
 
+  // Get-or-create a context by name - in this case this is the Green channel
   G42.GetGlueContext('___channel___Green', TGlueContextHandler.Create(nil,
     procedure(gc: IGlueContext; gcv: TArray<GlueContextValue>)
     begin
+      // show the Context data
       TraverseGlueContextValuesSafeArray(gc.GetData, memLog.Lines);
     end, nil));
 end;
@@ -532,6 +567,7 @@ begin
       gm.Instance.Metadata := nil;
       gm.ObjectTypes := nil;
 
+      // invoke this particular method and handle the result with a lambda
       G42.InvokeMethod(gm, CreateSampleArgs, TGlueResultHandler.Create(
         procedure(results: TGlueInvocationResultArray)
         var

@@ -1,3 +1,9 @@
+/// Glue42 Helper Unit
+/// Exposes helper utilities for consuming Glue42 COM library.
+/// - Lambda implementations for different Glue42 callback interfaces.
+/// - Packing/unpacking Context Value arguments in Safe Arrays
+/// - Converting from Glue Time to DateTime and vice-versa
+
 unit GlueHelper;
 
 interface
@@ -16,6 +22,7 @@ type
   TGlueInvocationResultArray = array of GlueInvocationResult;
   TGlueInstanceArray = array of GlueInstance;
 
+  /// Lambda implementation for handling an invocation result
   TGlueResultHandler = class(TInterfacedObject, IGlueInvocationResultHandler)
   private
     FHandlerLambda: TProc<TGlueInvocationResultArray>;
@@ -25,6 +32,7 @@ type
     constructor Create(handlerLambda: TProc<TGlueInvocationResultArray>);
   end;
 
+  /// Lambda implementation for handling an invocation request
   TGlueRequestHandler = class(TInterfacedObject, IGlueRequestHandler)
   private
     FHandlerLambda: TProc<GlueMethod, GlueInstance, TArray<GlueContextValue>,
@@ -38,6 +46,7 @@ type
       TArray<GlueContextValue>, IGlueServerMethodResultCallback>);
   end;
 
+  // Lambda implementation for handling Glue stream data - subscription side
   TGlueStreamHandler = class(TInterfacedObject, IGlueStreamHandler)
   private
     FDataLambda: TProc<GlueMethod, TArray<GlueContextValue>, PSafeArray>;
@@ -54,6 +63,7 @@ type
       PSafeArray>);
   end;
 
+  /// Lambda implementation for handling Glue contexts
   TGlueContextHandler = class(TInterfacedObject, IGlueContextHandler)
   private
     fRemovedLambda: TProc<IGlueContext, TArray<string>>;
@@ -69,6 +79,7 @@ type
       updatedLambda: TProc < IGlueContext, TArray < GlueContextValue >> );
   end;
 
+  /// Helper to expand/unpack SafeArray to another Type with converter
   TSafeArrayExpander<T, TA> = class
   type
     PT = ^T;
@@ -76,6 +87,7 @@ type
     class function AsArray(sa: PSafeArray; converter: TFunc<T, TA>): TArray<TA>;
   end;
 
+  /// Helper to expand/unpack SafeArray to another Type
   TSafeArrayExpander<T> = class(TSafeArrayExpander<T, T>)
   public
     class function AsArray(sa: PSafeArray): TArray<T>;
@@ -83,22 +95,39 @@ type
     class function AsPackedArray(sa: PSafeArray): TArray<T>;
   end;
 
+  /// Creates Tuple from GlueValue array - ready to be sent to Glue COM library
 function CreateTuple(GlueValues: TArray<GlueValue>): PSafeArray;
+
+/// Creates Composite from GlueContextValue array - ready to be sent to Glue COM library
 function CreateComposite(GlueContextValues: TArray<GlueContextValue>)
   : PSafeArray;
+
+/// Creates GlueInstance safe array from Glue Instance array - ready to be sent to Glue COM library
 function CreateGlueInstanceArray(GlueInstances: TGlueInstanceArray): PSafeArray;
+
+/// Creates Context Values from GlueContextValue array - ready to be sent to Glue COM library
 function CreateContextValues(GlueContextValues: TArray<GlueContextValue>)
   : PSafeArray;
 
+/// Example for traversing Glue Values
 procedure TraverseGlueValue(name: string; gv: GlueValue; lines: TStrings;
   level: Integer = 0);
+
+/// Example for traversing Glue Context Values
 procedure TraverseGlueContextValuesSafeArray(sa: PSafeArray; lines: TStrings;
   level: Integer = 0);
+
+/// Example for traversing array of Glue Context Values
+procedure TraverseGlueContextValues(GlueContextValues: TArray<GlueContextValue>;
+  lines: TStrings);
 
 const
   UnixEpochStart: TDateTime = 25569.0; // 01/01/1970
 
+  /// Converts Glue time to Delphi date-time
 function GlueTimeToDateTime(msecs: Int64): TDateTime;
+
+/// Converts Delphi date-time to Glue Time
 function DateTimeToGlueTime(dt: TDateTime): Int64;
 
 implementation
@@ -331,6 +360,18 @@ begin
             level + 1);
         end;
     end;
+  end;
+end;
+
+procedure TraverseGlueContextValues(GlueContextValues: TArray<GlueContextValue>;
+lines: TStrings);
+var
+  I: Integer;
+begin
+  for I := 0 to Length(GlueContextValues) - 1 do
+  begin
+    TraverseGlueValue(GlueContextValues[I].name,
+      GlueContextValues[I].Value, lines);
   end;
 end;
 
