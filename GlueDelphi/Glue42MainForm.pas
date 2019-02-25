@@ -141,8 +141,11 @@ begin
     else
     begin
       ind := FMethods.IndexOf(glueMethodKey);
-      FMethods.Objects[ind].Free;
-      FMethods.Delete(ind);
+      if ind >= 0 then
+      begin
+        FMethods.Objects[ind].Free;
+        FMethods.Delete(ind);
+      end;
     end;
 
     ListBox1.Items.Assign(FMethods);
