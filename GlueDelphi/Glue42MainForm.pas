@@ -12,7 +12,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, GlueAgm_TLB,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, GlueCOM_TLB,
   Winapi.ActiveX, ComObj,
   GlueHelper, mscorlib_TLB, Vcl.ComCtrls, DateUtils;
 
@@ -179,19 +179,19 @@ begin
   gcv[0].name := 'One';
 
   ZeroMemory(@gcv[0].Value, sizeof(gcv[0].Value));
-  gcv[0].Value.GlueType := AgmValueType_Int;
+  gcv[0].Value.GlueType := GlueValueType_Int;
   gcv[0].Value.LongValue := 5;
   gcv[1].name := 'Two';
 
   ZeroMemory(@gcv[1].Value, sizeof(gcv[1].Value));
-  gcv[1].Value.GlueType := AgmValueType_String;
+  gcv[1].Value.GlueType := GlueValueType_String;
   gcv[1].Value.StringValue := 'And a string for you, sirs';
 
   SetLength(argsValues, 1);
   argsValues[0].name := 'Level 0';
 
   ZeroMemory(@argsValues[0].Value, sizeof(argsValues[0].Value));
-  argsValues[0].Value.GlueType := AgmValueType_Composite;
+  argsValues[0].Value.GlueType := GlueValueType_Composite;
   argsValues[0].Value.CompositeValue := CreateComposite(gcv);
 
   Result := CreateContextValues(argsValues);
@@ -262,7 +262,7 @@ begin
 
   // invoke ALL methods matching this name and handle the result in the lambda
   G42.InvokeMethods(edtMethodName.Text, args, nil, true,
-    AgmInstanceIdentity_None, handler, 5000);
+    GlueInstanceIdentity_None, handler, 5000);
 
   SafeArrayDestroy(args);
 end;
@@ -288,7 +288,7 @@ begin
 
   // make a stream subscription and handle the streaming data with a lambda
   G42.SubscribeStreams(edtStreamName.Text, nil, nil, false,
-    AgmInstanceIdentity_None, sub, -1);
+    GlueInstanceIdentity_None, sub, -1);
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -326,7 +326,7 @@ var
 begin
   if gv.IsArray then
   begin
-    if gv.GlueType = AgmValueType_Tuple then
+    if gv.GlueType = GlueValueType_Tuple then
     begin
       tuple := TSafeArrayExpander<GlueValue>.AsPackedArray(gv.tuple);
       for I := 0 to Length(tuple) - 1 do
@@ -334,7 +334,7 @@ begin
         BuildValueTree(IntToStr(I), tuple[I], tree, node);
       end;
     end
-    else if gv.GlueType = AgmValueType_Composite then
+    else if gv.GlueType = GlueValueType_Composite then
     begin
       comp := TSafeArrayExpander<GlueContextValue>.AsPackedArray
         (gv.CompositeValue);
@@ -343,7 +343,7 @@ begin
     else
     begin
       case gv.GlueType of
-        AgmValueType_String:
+        GlueValueType_String:
           begin
             stringRepresentation :=
               string.Join(',', TSafeArrayExpander<WideString, string>.AsArray
@@ -353,7 +353,7 @@ begin
                 Result := ws;
               end));
           end;
-        AgmValueType_Bool:
+        GlueValueType_Bool:
           begin
             stringRepresentation :=
               string.Join(',', TSafeArrayExpander<WordBool, string>.AsArray
@@ -363,7 +363,7 @@ begin
                 Result := BoolToStr(b);
               end));
           end;
-        AgmValueType_Int:
+        GlueValueType_Int:
           stringRepresentation :=
             string.Join(',', TSafeArrayExpander<Int64, string>.AsArray
             (gv.LongArray,
@@ -371,7 +371,7 @@ begin
             begin
               Result := IntToStr(b);
             end));
-        AgmValueType_Long:
+        GlueValueType_Long:
           stringRepresentation :=
             string.Join(',', TSafeArrayExpander<Int64, string>.AsArray
             (gv.LongArray,
@@ -379,7 +379,7 @@ begin
             begin
               Result := IntToStr(b);
             end));
-        AgmValueType_Double:
+        GlueValueType_Double:
           stringRepresentation :=
             string.Join(',', TSafeArrayExpander<Double, string>.AsArray
             (gv.DoubleArray,
@@ -387,7 +387,7 @@ begin
             begin
               Result := FloatToStr(b);
             end));
-        AgmValueType_DateTime:
+        GlueValueType_DateTime:
           stringRepresentation :=
             string.Join(',', TSafeArrayExpander<Int64, string>.AsArray
             (gv.LongArray,
@@ -401,7 +401,7 @@ begin
   end
   else
   begin
-    if gv.GlueType = AgmValueType_Composite then
+    if gv.GlueType = GlueValueType_Composite then
     begin
       comp := TSafeArrayExpander<GlueContextValue>.AsPackedArray
         (gv.CompositeValue);
@@ -410,20 +410,20 @@ begin
     else
     begin
       case gv.GlueType of
-        AgmValueType_String:
+        GlueValueType_String:
           stringRepresentation := gv.StringValue;
-        AgmValueType_Bool:
+        GlueValueType_Bool:
           stringRepresentation := BoolToStr(gv.BoolValue);
-        AgmValueType_Int:
+        GlueValueType_Int:
           stringRepresentation := IntToStr(gv.LongValue);
-        AgmValueType_Long:
+        GlueValueType_Long:
           stringRepresentation := IntToStr(gv.LongValue);
-        AgmValueType_Double:
+        GlueValueType_Double:
           stringRepresentation := FloatToStr(gv.DoubleValue);
-        AgmValueType_DateTime:
+        GlueValueType_DateTime:
           stringRepresentation :=
             DateTimeToStr(GlueTimeToDateTime(gv.LongValue));
-        AgmValueType_Tuple:
+        GlueValueType_Tuple:
           // never - tuple is always an array
           ;
       end;
@@ -492,25 +492,46 @@ end;
 procedure TForm1.BtnGlueInitClick(Sender: TObject);
 var
   inst: GlueInstance;
+  cfg: GlueConfiguration;
 begin
-  // create the Glue42 com object
-  G42 := CoGlue42.Create() as IGlue42;
+  try
+    // create the Glue42 com object
+    G42 := CoGlue42.Create() as IGlue42;
+  except
+    on E: Exception do
+    begin
+      memLog.Lines.Add(E.ClassName + ' raised: ' + E.Message);
+      Exit;
+    end;
+  end;
+  try
+    // subscribe to all events
+    G42.Subscribe(Self);
 
-  // subscribe to all events
-  G42.Subscribe(self);
+    // configure own identity
+    ZeroMemory(@inst, sizeof(inst));
+    inst.ApplicationName := 'DelphiRulez';
+    inst.Metadata := nil;
 
-  // configure own identity
-  ZeroMemory(@inst, sizeof(inst));
-  inst.ApplicationName := 'DelphiRulez';
-  inst.Metadata := nil;
+    ZeroMemory(@cfg, sizeof(cfg));
+    cfg.LoggingConfigurationPath := 'GlueCOMDelphiLog.config';
+    G42.OverrideConfiguration(cfg);
 
-  // init and start the Glue42
-  G42.Start(inst);
+    // init and start the Glue42
+    G42.Start(inst);
+
+  except
+    on E: Exception do
+    begin
+      memLog.Lines.Add(E.ClassName + ' raised: ' + E.Message);
+      Exit;
+    end;
+  end;
 
   try
     // register VCL form window as Glue Window so it will become sticky,
     // participate in Glue Groups and consume Glue channels
-    glueWindow := G42.RegisterGlueWindow(self.Handle, self);
+    glueWindow := G42.RegisterGlueWindow(Self.Handle, Self);
 
     // change the Glue Window title
     glueWindow.SetTitle('Delphi Glue Window');
@@ -534,7 +555,7 @@ begin
 
       TraverseGlueContextValues(requestArgs, memLog.Lines);
       ZeroMemory(@gr, sizeof(gr));
-      gr.Status := AgmMethodInvocationStatus_Succeeded;
+      gr.Status := GlueMethodInvocationStatus_Succeeded;
       gr.Values := CreateContextValues(requestArgs);
       gr.Message := 'Here, take it';
       resultCallback.SendResult(gr);
@@ -542,17 +563,25 @@ begin
     end), '', '', nil);
 
   // register stream - publishing side, passing self as IGlueSubscriptionHandler
-  G42.RegisterStream('GlueDelphiStream', self, '', '', nil, stream);
+  G42.RegisterStream('GlueDelphiStream', Self, '', '', nil, stream);
 
   memLog.Lines.Add('InstanceId is ' + G42.GetInstance.InstanceId);
 
-  // Get-or-create a context by name - in this case this is the Green channel
-  G42.GetGlueContext('___channel___Green', TGlueContextHandler.Create(nil,
-    procedure(gc: IGlueContext; gcv: TArray<GlueContextValue>)
+  try
+    // Get-or-create a context by name - in this case this is the Green channel
+    G42.GetGlueContext('___channel___Green', TGlueContextHandler.Create(nil,
+      procedure(gc: IGlueContext; gcv: TArray<GlueContextValue>)
+      begin
+        // show the Context data
+        TraverseGlueContextValuesSafeArray(gc.GetData, memLog.Lines);
+      end, nil));
+  except
+    on E: Exception do
     begin
-      // show the Context data
-      TraverseGlueContextValuesSafeArray(gc.GetData, memLog.Lines);
-    end, nil));
+      memLog.Lines.Add(E.ClassName + ' raised: ' + E.Message);
+      Exit;
+    end;
+  end;
 end;
 
 procedure TForm1.ListBox1DblClick(Sender: TObject);
@@ -592,7 +621,7 @@ end;
 
 constructor TGlueMethod.Create(Method: GlueMethod);
 begin
-  self.Method := Method;
+  Self.Method := Method;
 end;
 
 end.

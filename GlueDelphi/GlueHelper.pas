@@ -9,7 +9,7 @@ unit GlueHelper;
 interface
 
 uses
-  System.SysUtils, System.Variants, System.Classes, GlueAgm_TLB, Winapi.ActiveX,
+  System.SysUtils, System.Variants, System.Classes, GlueCOM_TLB, Winapi.ActiveX,
   ComObj;
 
 type
@@ -154,7 +154,7 @@ var
   I: Integer;
   vItem: tagVARIANT;
 begin
-  hr := GetRecordInfoFromGuids(LIBID_GlueAgm, 1, 56, LOCALE_USER_DEFAULT,
+  hr := GetRecordInfoFromGuids(LIBID_GlueCOM, 1, 0, LOCALE_USER_DEFAULT,
     StringToGUID('{93da746a-fb5d-45c4-96fb-8d7f3ca43960}'), pri);
 
   if Succeeded(hr) then
@@ -188,7 +188,7 @@ var
   I: Integer;
   vItem: tagVARIANT;
 begin
-  hr := GetRecordInfoFromGuids(LIBID_GlueAgm, 1, 56, LOCALE_USER_DEFAULT,
+  hr := GetRecordInfoFromGuids(LIBID_GlueCOM, 1, 0, LOCALE_USER_DEFAULT,
     StringToGUID('{c74dd3d8-08a3-4b68-a41e-af04acd319bd}'), pri);
 
   if Succeeded(hr) then
@@ -220,7 +220,7 @@ var
   sa: PSafeArray;
   I: Integer;
 begin
-  hr := GetRecordInfoFromGuids(LIBID_GlueAgm, 1, 56, LOCALE_USER_DEFAULT,
+  hr := GetRecordInfoFromGuids(LIBID_GlueCOM, 1, 0, LOCALE_USER_DEFAULT,
     StringToGUID('{12E47256-B411-4024-BA5C-13DF4C78C31D}'), pri);
 
   if Succeeded(hr) then
@@ -249,7 +249,7 @@ var
   sa: PSafeArray;
   I: Integer;
 begin
-  hr := GetRecordInfoFromGuids(LIBID_GlueAgm, 1, 56, LOCALE_USER_DEFAULT,
+  hr := GetRecordInfoFromGuids(LIBID_GlueCOM, 1, 0, LOCALE_USER_DEFAULT,
     StringToGUID('{c74dd3d8-08a3-4b68-a41e-af04acd319bd}'), pri);
 
   if Succeeded(hr) then
@@ -281,7 +281,7 @@ begin
   if (gv.IsArray) then
   begin
     case gv.GlueType of
-      AgmValueType_String:
+      GlueValueType_String:
         begin
           lines.Add(string.Join(',', TSafeArrayExpander<WideString,
             string>.AsArray(gv.StringArray,
@@ -290,7 +290,7 @@ begin
               Result := ws;
             end)));
         end;
-      AgmValueType_Bool:
+      GlueValueType_Bool:
         begin
           lines.Add(string.Join(',', TSafeArrayExpander<WordBool,
             string>.AsArray(gv.BoolArray,
@@ -299,30 +299,30 @@ begin
               Result := BoolToStr(b);
             end)));
         end;
-      AgmValueType_Int:
+      GlueValueType_Int:
         lines.Add(string.Join(',', TSafeArrayExpander<Int64, string>.AsArray
           (gv.LongArray,
           function(b: Int64): string
           begin
             Result := IntToStr(b);
           end)));
-      AgmValueType_Long:
+      GlueValueType_Long:
         lines.Add(string.Join(',', TSafeArrayExpander<Int64, string>.AsArray
           (gv.LongArray,
           function(b: Int64): string
           begin
             Result := IntToStr(b);
           end)));
-      AgmValueType_Double:
+      GlueValueType_Double:
         lines.Add(string.Join(',', TSafeArrayExpander<Double, string>.AsArray
           (gv.DoubleArray,
           function(b: Double): string
           begin
             Result := FloatToStr(b);
           end)));
-      AgmValueType_DateTime:
+      GlueValueType_DateTime:
         ;
-      AgmValueType_Tuple:
+      GlueValueType_Tuple:
         begin
           lines.Add(offset + '(Tuple) ' + name + ' = ');
           GlueValues := TSafeArrayExpander<GlueValue>.AsPackedArray(gv.Tuple);
@@ -331,7 +331,7 @@ begin
             TraverseGlueValue('Tuple', GlueValues[I], lines, level + 1);
           end;
         end;
-      AgmValueType_Composite:
+      GlueValueType_Composite:
         begin
           lines.Add(offset + 'Composite[] ' + name + ' = ');
           TraverseGlueContextValuesSafeArray(gv.CompositeValue, lines,
@@ -342,18 +342,18 @@ begin
   else
   begin
     case gv.GlueType of
-      AgmValueType_Bool:
+      GlueValueType_Bool:
         lines.Add(offset + '(Bool) ' + name + ' = ' + BoolToStr(gv.BoolValue));
-      AgmValueType_String:
+      GlueValueType_String:
         lines.Add(offset + '(String) ' + name + ' = ' + gv.StringValue);
-      AgmValueType_Int:
+      GlueValueType_Int:
         lines.Add(offset + '(Int) ' + name + ' = ' + IntToStr(gv.LongValue));
-      AgmValueType_Long:
+      GlueValueType_Long:
         lines.Add(offset + '(Long) ' + name + ' = ' + IntToStr(gv.LongValue));
-      AgmValueType_Double:
+      GlueValueType_Double:
         lines.Add(offset + '(Double) ' + name + ' = ' +
           FloatToStr(gv.DoubleValue));
-      AgmValueType_Composite:
+      GlueValueType_Composite:
         begin
           lines.Add(offset + 'Composite ' + name + ' = ');
           TraverseGlueContextValuesSafeArray(gv.CompositeValue, lines,
@@ -569,6 +569,9 @@ end;
 
 function TGlueContextHandler.HandleContextUpdate(const contextUpdate
   : IGlueContextUpdate): HResult;
+var
+  context: IGlueContext;
+  added: PSafeArray;
 begin
   if Assigned(fRemovedLambda) then
   begin
@@ -582,8 +585,9 @@ begin
 
   if Assigned(fAddedLambda) then
   begin
-    fAddedLambda(contextUpdate.GetContext,
-      TSafeArrayExpander<GlueContextValue>.AsArray(contextUpdate.GetAdded));
+    context := contextUpdate.GetContext;
+    added := contextUpdate.GetAdded;
+    fAddedLambda(context, TSafeArrayExpander<GlueContextValue>.AsArray(added));
   end;
 
   if Assigned(fUpdatedLambda) then
