@@ -6,7 +6,7 @@ uses
   ComObj,
   Winapi.ActiveX,
   GlueHelper in 'GlueHelper.pas',
-  GlueAgm_TLB in 'GlueAgm_TLB.pas';
+  GlueCOM_TLB in 'GlueCOM_TLB.pas';
 
 {$R *.res}
 
