@@ -87,6 +87,8 @@
         <VerInfo_Locale>1033</VerInfo_Locale>
         <Manifest_File>Glue42.exe.manifest</Manifest_File>
         <PostBuildEvent><![CDATA[copy /Y GlueCOMDelphiLog.config $(OUTPUTDIR)
+copy /Y %localappdata%\Tick42\GlueSDK\GlueCOM\GlueCOM.* $(OUTPUTDIR)
+copy /Y %localappdata%\Tick42\GlueSDK\GlueCOM\Glue42.* $(OUTPUTDIR)
 $(PostBuildEvent)]]></PostBuildEvent>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
@@ -639,7 +641,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>copy /Y GlueCOMDelphiLog.config $(OUTPUTDIR)</PostBuildEvent>
+        <PostBuildEvent>copy /Y GlueCOMDelphiLog.config $(OUTPUTDIR)&amp;&amp;copy /Y %localappdata%\Tick42\GlueSDK\GlueCOM\GlueCOM.* $(OUTPUTDIR)&amp;&amp;copy /Y %localappdata%\Tick42\GlueSDK\GlueCOM\Glue42.* $(OUTPUTDIR)</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
 </Project>
