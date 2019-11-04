@@ -325,6 +325,11 @@ begin
       GlueValueType_Tuple:
         begin
           lines.Add(offset + '(Tuple) ' + name + ' = ');
+          if gv.Tuple = nil then
+          begin
+            lines.Add('NIL');
+            Exit;
+          end;
           GlueValues := TSafeArrayExpander<GlueValue>.AsPackedArray(gv.Tuple);
           for I := 0 to Length(GlueValues) - 1 do
           begin
@@ -516,6 +521,12 @@ var
   pVar: PVariant;
   I, iLow, iHigh: Integer;
 begin
+  if sa = nil then
+  begin
+    Result := nil;
+    exit;
+  end;
+
   SafeArrayAccessData(sa, pv);
   pVar := pv;
 
