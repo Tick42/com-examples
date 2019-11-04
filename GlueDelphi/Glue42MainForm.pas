@@ -23,7 +23,6 @@ type
     Edit1: TEdit;
     ListBox1: TListBox;
     GroupBox2: TGroupBox;
-    btnInitGlue: TButton;
     btnGlueInvoke: TButton;
     btnSubscribe: TButton;
     btnPush: TButton;
@@ -33,7 +32,6 @@ type
     TreeView1: TTreeView;
     GroupBox4: TGroupBox;
     memLog: TMemo;
-    procedure BtnGlueInitClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btnGlueInvokeClick(Sender: TObject);
     procedure btnSubscribeClick(Sender: TObject);
@@ -49,6 +47,8 @@ type
     FMethods: TStringList;
     function CreateSampleArgs: PSafeArray;
   protected
+    procedure InitializeGlue;
+
     // implements IGlueEvents - general status changes and other
     // points of interest that occur in Glue42 environment
     function HandleConnectionStatus(State: GlueState; const Message: WideString;
@@ -306,6 +306,12 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   FMethods := TStringList.Create;
+  Hide;
+  try
+    InitializeGlue;
+  finally
+    Show;
+  end;
 end;
 
 function TForm1.HandleWindowDestroyed(const glueWindow: IGlueWindow)
@@ -489,7 +495,7 @@ begin
   Result := S_OK;
 end;
 
-procedure TForm1.BtnGlueInitClick(Sender: TObject);
+procedure TForm1.InitializeGlue;
 var
   inst: GlueInstance;
   cfg: GlueConfiguration;

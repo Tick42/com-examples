@@ -52,56 +52,47 @@ object Form1: TForm1
     Align = alTop
     Caption = 'Glue Control'
     TabOrder = 1
-    object btnInitGlue: TButton
-      Left = 8
-      Top = 16
-      Width = 75
-      Height = 25
-      Caption = 'Init Glue'
-      TabOrder = 0
-      OnClick = BtnGlueInitClick
-    end
     object btnGlueInvoke: TButton
-      Left = 112
+      Left = 16
       Top = 16
       Width = 75
       Height = 25
       Caption = 'Invoke all'
-      TabOrder = 1
+      TabOrder = 0
       OnClick = btnGlueInvokeClick
     end
     object btnSubscribe: TButton
-      Left = 112
-      Top = 56
+      Left = 16
+      Top = 47
       Width = 75
       Height = 25
       Caption = 'Subscribe'
-      TabOrder = 2
+      TabOrder = 1
       OnClick = btnSubscribeClick
     end
     object btnPush: TButton
-      Left = 8
-      Top = 56
+      Left = 308
+      Top = 32
       Width = 75
       Height = 25
       Caption = 'Push'
-      TabOrder = 3
+      TabOrder = 2
       OnClick = btnPushClick
     end
     object edtMethodName: TEdit
-      Left = 193
+      Left = 97
       Top = 18
       Width = 184
       Height = 21
-      TabOrder = 4
+      TabOrder = 3
       Text = 'JSMethod'
     end
     object edtStreamName: TEdit
-      Left = 192
-      Top = 58
+      Left = 98
+      Top = 49
       Width = 185
       Height = 21
-      TabOrder = 5
+      TabOrder = 4
       Text = 'MarketData.LastTrades'
     end
   end
