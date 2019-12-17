@@ -12,7 +12,7 @@ unit mscorlib_TLB;
 // ************************************************************************ //
 
 // $Rev: 52393 $
-// File generated on 2019-02-28 12:29:56 PM from Type Library described below.
+// File generated on 2019-12-17 3:25:27 PM from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\Windows\Microsoft.NET\Framework\v4.0.30319\mscorlib.tlb (1)
@@ -23,7 +23,7 @@ unit mscorlib_TLB;
 // DepndLst: 
 //   (1) v2.0 stdole, (C:\Windows\SysWOW64\stdole2.tlb)
 // Parent TypeLibrary:
-//   (0) v1.0 GlueCOM, (A:\Work\github\com-examples\GlueDelphi\Win32\Debug\GlueCOM.dll)
+//   (0) v2.0 GlueCOM, (A:\Work\stash\dot-net-glue-com\GlueCom\bin\Debug\GlueCOM.dll)
 // SYS_KIND: SYS_WIN32
 // Errors:
 //   Hint: Symbol 'Object' renamed to 'CLRObject'

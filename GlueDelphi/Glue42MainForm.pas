@@ -65,8 +65,8 @@ type
     // registered Glue Window
     function HandleChannelData(const glueWindow: IGlueWindow;
       const channelUpdate: IGlueContextUpdate): HResult; stdcall;
-    function HandleChannelLeft(const glueWindow: IGlueWindow;
-      const channel: IGlueContext): HResult; stdcall;
+    function HandleChannelChanged(const glueWindow: IGlueWindow;
+      const channel: IGlueContext; prevChannel: GlueContext): HResult; stdcall;
     function HandleWindowDestroyed(const glueWindow: IGlueWindow)
       : HResult; stdcall;
 
@@ -297,6 +297,7 @@ begin
   begin
     glueWindow.Unregister;
   end;
+
   if Assigned(G42) then
   begin
     G42.Stop;
@@ -329,15 +330,17 @@ var
   stringRepresentation: string;
   tuple: TArray<GlueValue>;
   I: Integer;
+  tupleNode: TTreeNode;
 begin
   if gv.IsArray then
   begin
     if gv.GlueType = GlueValueType_Tuple then
     begin
       tuple := TSafeArrayExpander<GlueValue>.AsPackedArray(gv.tuple);
+      tupleNode := tree.AddChild(node, name);
       for I := 0 to Length(tuple) - 1 do
       begin
-        BuildValueTree(IntToStr(I), tuple[I], tree, node);
+        BuildValueTree(IntToStr(I), tuple[I], tree, tupleNode);
       end;
     end
     else if gv.GlueType = GlueValueType_Composite then
@@ -466,7 +469,7 @@ begin
   contextInfo := gc.GetContextInfo;
   memLog.Lines.Add('Bound to channel ' + contextInfo.name);
   channelData := gc.GetData;
-  TraverseGlueContextValuesSafeArray(channelData, memLog.Lines);
+//  TraverseGlueContextValuesSafeArray(channelData, memLog.Lines);
 
   TreeView1.Items.BeginUpdate;
 
@@ -482,10 +485,14 @@ begin
   Result := S_OK;
 end;
 
-function TForm1.HandleChannelLeft(const glueWindow: IGlueWindow;
-const channel: IGlueContext): HResult;
+function TForm1.HandleChannelChanged(const glueWindow: IGlueWindow;
+const channel: IGlueContext; prevChannel: GlueContext): HResult;
 begin
-  memLog.Lines.Add('Left channel ' + channel.GetContextInfo.name);
+  memLog.Lines.Add('Left channel ' + prevChannel.name);
+  if (channel <> nil) then
+  begin
+    memLog.Lines.Add('Now in channel ' + channel.GetContextInfo.name);
+  end;
   Result := S_OK;
 end;
 
