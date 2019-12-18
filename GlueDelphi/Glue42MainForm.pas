@@ -238,7 +238,7 @@ procedure TForm1.btnGlueInvokeClick(Sender: TObject);
 var
   handler: IGlueInvocationResultHandler;
   args: PSafeArray;
-  targets: TGlueInstanceArray;
+//  targets: TGlueInstanceArray;
 begin
   handler := TGlueResultHandler.Create(
     procedure(results: TGlueInvocationResultArray)
@@ -458,6 +458,30 @@ begin
   end;
 end;
 
+procedure ExpandNodes(const node: TTreeNode; level: Integer);
+var
+  ANode, CNode: TTreeNode;
+begin
+  if level <= 0 then
+  begin
+    Exit;
+  end;
+
+  node.Expand(false);
+  ANode := node;
+  while ANode <> nil do
+  begin
+    CNode := node.getFirstChild;
+    while CNode <> nil do
+    begin
+      CNode.Expand(false);
+      ExpandNodes(CNode, level - 1);
+      CNode := CNode.GetNextSibling;
+    end;
+    ANode := ANode.GetNextSibling;
+  end;
+end;
+
 function TForm1.HandleChannelData(const glueWindow: IGlueWindow;
 const channelUpdate: IGlueContextUpdate): HResult;
 var
@@ -467,9 +491,9 @@ var
 begin
   gc := channelUpdate.GetContext;
   contextInfo := gc.GetContextInfo;
-  memLog.Lines.Add('Bound to channel ' + contextInfo.name);
+//  memLog.Lines.Add('Bound to channel ' + contextInfo.name);
   channelData := gc.GetData;
-//  TraverseGlueContextValuesSafeArray(channelData, memLog.Lines);
+  // TraverseGlueContextValuesSafeArray(channelData, memLog.Lines);
 
   TreeView1.Items.BeginUpdate;
 
@@ -478,9 +502,13 @@ begin
     (channelData), TreeView1.Items, TreeView1.Items.AddChild(nil,
     contextInfo.name));
 
-  TreeView1.Items.GetFirstNode.Expand(true);
+  TreeView1.Items.GetFirstNode.Collapse(true);
+  ExpandNodes(TreeView1.Items.GetFirstNode, 2);
 
   TreeView1.Items.EndUpdate;
+
+  TreeView1.Items.GetFirstNode.Focused := true;
+  TreeView1.Items.GetFirstNode.Selected := true;
 
   Result := S_OK;
 end;

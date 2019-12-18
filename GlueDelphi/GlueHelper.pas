@@ -275,15 +275,37 @@ var
   I: Integer;
   GlueValues: TArray<GlueValue>;
   offset: string;
+  valueTypeName: string;
+  prefix: string;
 begin
   offset := StringOfChar(chr(9), level);
 
+  case gv.GlueType of
+    GlueValueType_Bool:
+      valueTypeName := 'Bool';
+    GlueValueType_Int:
+      valueTypeName := 'Int';
+    GlueValueType_Double:
+      valueTypeName := 'Double';
+    GlueValueType_Long:
+      valueTypeName := 'Long';
+    GlueValueType_String:
+      valueTypeName := 'String';
+    GlueValueType_DateTime:
+      valueTypeName := 'DateTime';
+    GlueValueType_Tuple:
+      valueTypeName := 'Tuple';
+    GlueValueType_Composite:
+      valueTypeName := 'Composite';
+  end;
+
   if (gv.IsArray) then
   begin
+    prefix := offset + '(' + valueTypeName + '[])' + name + ' = ';
     case gv.GlueType of
       GlueValueType_String:
         begin
-          lines.Add(string.Join(',', TSafeArrayExpander<WideString,
+          lines.Add(prefix + string.Join(',', TSafeArrayExpander<WideString,
             string>.AsArray(gv.StringArray,
             function(ws: WideString): string
             begin
@@ -292,30 +314,30 @@ begin
         end;
       GlueValueType_Bool:
         begin
-          lines.Add(string.Join(',', TSafeArrayExpander<WordBool,
-            string>.AsArray(gv.BoolArray,
+          lines.Add(prefix + string.Join(',',
+            TSafeArrayExpander<WordBool, string>.AsArray(gv.BoolArray,
             function(b: WordBool): string
             begin
               Result := BoolToStr(b);
             end)));
         end;
       GlueValueType_Int:
-        lines.Add(string.Join(',', TSafeArrayExpander<Int64, string>.AsArray
-          (gv.LongArray,
+        lines.Add(prefix + string.Join(',',
+          TSafeArrayExpander<Int64, string>.AsArray(gv.LongArray,
           function(b: Int64): string
           begin
             Result := IntToStr(b);
           end)));
       GlueValueType_Long:
-        lines.Add(string.Join(',', TSafeArrayExpander<Int64, string>.AsArray
-          (gv.LongArray,
+        lines.Add(prefix + string.Join(',',
+          TSafeArrayExpander<Int64, string>.AsArray(gv.LongArray,
           function(b: Int64): string
           begin
             Result := IntToStr(b);
           end)));
       GlueValueType_Double:
-        lines.Add(string.Join(',', TSafeArrayExpander<Double, string>.AsArray
-          (gv.DoubleArray,
+        lines.Add(prefix + string.Join(',',
+          TSafeArrayExpander<Double, string>.AsArray(gv.DoubleArray,
           function(b: Double): string
           begin
             Result := FloatToStr(b);
@@ -324,7 +346,7 @@ begin
         ;
       GlueValueType_Tuple:
         begin
-          lines.Add(offset + '(Tuple) ' + name + ' = ');
+          lines.Add(prefix);
           if gv.Tuple = nil then
           begin
             lines.Add('NIL');
@@ -338,7 +360,7 @@ begin
         end;
       GlueValueType_Composite:
         begin
-          lines.Add(offset + 'Composite[] ' + name + ' = ');
+          lines.Add(prefix);
           TraverseGlueContextValuesSafeArray(gv.CompositeValue, lines,
             level + 1);
         end;
@@ -346,21 +368,21 @@ begin
   end
   else
   begin
+    prefix := offset + '(' + valueTypeName + ')' + name + ' = ';
     case gv.GlueType of
       GlueValueType_Bool:
-        lines.Add(offset + '(Bool) ' + name + ' = ' + BoolToStr(gv.BoolValue));
+        lines.Add(prefix + BoolToStr(gv.BoolValue));
       GlueValueType_String:
-        lines.Add(offset + '(String) ' + name + ' = ' + gv.StringValue);
+        lines.Add(prefix + gv.StringValue);
       GlueValueType_Int:
-        lines.Add(offset + '(Int) ' + name + ' = ' + IntToStr(gv.LongValue));
+        lines.Add(prefix + IntToStr(gv.LongValue));
       GlueValueType_Long:
-        lines.Add(offset + '(Long) ' + name + ' = ' + IntToStr(gv.LongValue));
+        lines.Add(prefix + IntToStr(gv.LongValue));
       GlueValueType_Double:
-        lines.Add(offset + '(Double) ' + name + ' = ' +
-          FloatToStr(gv.DoubleValue));
+        lines.Add(prefix + FloatToStr(gv.DoubleValue));
       GlueValueType_Composite:
         begin
-          lines.Add(offset + 'Composite ' + name + ' = ');
+          lines.Add(prefix);
           TraverseGlueContextValuesSafeArray(gv.CompositeValue, lines,
             level + 1);
         end;
@@ -524,7 +546,7 @@ begin
   if sa = nil then
   begin
     Result := nil;
-    exit;
+    Exit;
   end;
 
   SafeArrayAccessData(sa, pv);
