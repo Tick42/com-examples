@@ -25,11 +25,11 @@ type
   /// Lambda implementation for handling an invocation result
   TGlueResultHandler = class(TInterfacedObject, IGlueInvocationResultHandler)
   private
-    FHandlerLambda: TProc<TGlueInvocationResultArray>;
+    FHandlerLambda: TProc<TGlueInvocationResultArray, string>;
   protected
-    function HandleResult(invocationResult: PSafeArray): HResult; stdcall;
+    function HandleResult(invocationResult: PSafeArray; const correlationId: WideString): HResult; stdcall;
   public
-    constructor Create(handlerLambda: TProc<TGlueInvocationResultArray>);
+    constructor Create(handlerLambda: TProc<TGlueInvocationResultArray, string>);
   end;
 
   /// Lambda implementation for handling an invocation request
@@ -154,7 +154,7 @@ var
   I: Integer;
   vItem: tagVARIANT;
 begin
-  hr := GetRecordInfoFromGuids(LIBID_GlueCOM, 1, 0, LOCALE_USER_DEFAULT,
+  hr := GetRecordInfoFromGuids(LIBID_GlueCOM, GlueCOMMajorVersion, GlueCOMMinorVersion, LOCALE_USER_DEFAULT,
     StringToGUID('{93da746a-fb5d-45c4-96fb-8d7f3ca43960}'), pri);
 
   if Succeeded(hr) then
@@ -188,7 +188,7 @@ var
   I: Integer;
   vItem: tagVARIANT;
 begin
-  hr := GetRecordInfoFromGuids(LIBID_GlueCOM, 1, 0, LOCALE_USER_DEFAULT,
+  hr := GetRecordInfoFromGuids(LIBID_GlueCOM, GlueCOMMajorVersion, GlueCOMMinorVersion, LOCALE_USER_DEFAULT,
     StringToGUID('{c74dd3d8-08a3-4b68-a41e-af04acd319bd}'), pri);
 
   if Succeeded(hr) then
@@ -220,7 +220,7 @@ var
   sa: PSafeArray;
   I: Integer;
 begin
-  hr := GetRecordInfoFromGuids(LIBID_GlueCOM, 1, 0, LOCALE_USER_DEFAULT,
+  hr := GetRecordInfoFromGuids(LIBID_GlueCOM, GlueCOMMajorVersion, GlueCOMMinorVersion, LOCALE_USER_DEFAULT,
     StringToGUID('{12E47256-B411-4024-BA5C-13DF4C78C31D}'), pri);
 
   if Succeeded(hr) then
@@ -249,7 +249,7 @@ var
   sa: PSafeArray;
   I: Integer;
 begin
-  hr := GetRecordInfoFromGuids(LIBID_GlueCOM, 1, 0, LOCALE_USER_DEFAULT,
+  hr := GetRecordInfoFromGuids(LIBID_GlueCOM, GlueCOMMajorVersion, GlueCOMMinorVersion, LOCALE_USER_DEFAULT,
     StringToGUID('{c74dd3d8-08a3-4b68-a41e-af04acd319bd}'), pri);
 
   if Succeeded(hr) then
@@ -446,12 +446,12 @@ begin
 end;
 
 constructor TGlueResultHandler.Create(handlerLambda
-  : TProc<TGlueInvocationResultArray>);
+  : TProc<TGlueInvocationResultArray, string>);
 begin
   FHandlerLambda := handlerLambda;
 end;
 
-function TGlueResultHandler.HandleResult(invocationResult: PSafeArray)
+function TGlueResultHandler.HandleResult(invocationResult: PSafeArray;const correlationId: WideString)
   : HResult; stdcall;
 var
   results: PGlueInvocationResult;
@@ -475,7 +475,7 @@ begin
 
   SafeArrayUnaccessData(invocationResult);
 
-  FHandlerLambda(glueResults);
+  FHandlerLambda(glueResults, correlationId);
   Result := S_OK;
 end;
 

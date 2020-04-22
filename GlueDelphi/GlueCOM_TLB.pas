@@ -1,31 +1,31 @@
 unit GlueCOM_TLB;
 
 // ************************************************************************ //
-// WARNING                                                                    
-// -------                                                                    
-// The types declared in this file were generated from data read from a       
-// Type Library. If this type library is explicitly or indirectly (via        
-// another type library referring to this type library) re-imported, or the   
-// 'Refresh' command of the Type Library Editor activated while editing the   
-// Type Library, the contents of this file will be regenerated and all        
-// manual modifications will be lost.                                         
+// WARNING
+// -------
+// The types declared in this file were generated from data read from a
+// Type Library. If this type library is explicitly or indirectly (via
+// another type library referring to this type library) re-imported, or the
+// 'Refresh' command of the Type Library Editor activated while editing the
+// Type Library, the contents of this file will be regenerated and all
+// manual modifications will be lost.
 // ************************************************************************ //
 
 // $Rev: 52393 $
-// File generated on 2019-12-17 3:25:27 PM from Type Library described below.
+// File generated on 2020-04-15 2:03:48 PM from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: A:\Work\stash\dot-net-glue-com\GlueCom\bin\Debug\GlueCOM.dll (1)
 // LIBID: {84EF66B3-C5E2-4C58-AD95-0E956FAE7027}
 // LCID: 0
-// Helpfile: 
+// Helpfile:
 // HelpString: Tick42 Glue for COM
-// DepndLst: 
+// DepndLst:
 //   (1) v2.0 stdole, (C:\Windows\SysWOW64\stdole2.tlb)
 //   (2) v2.4 mscorlib, (C:\Windows\Microsoft.NET\Framework\v4.0.30319\mscorlib.tlb)
 // SYS_KIND: SYS_WIN32
 // ************************************************************************ //
-{$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers. 
+{$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers.
 {$WARN SYMBOL_PLATFORM OFF}
 {$WRITEABLECONST ON}
 {$VARPROPSETTER ON}
@@ -34,15 +34,15 @@ unit GlueCOM_TLB;
 interface
 
 uses Winapi.Windows, mscorlib_TLB, System.Classes, System.Variants, System.Win.StdVCL, Vcl.Graphics, Vcl.OleServer, Winapi.ActiveX;
-  
+
 
 
 // *********************************************************************//
-// GUIDS declared in the TypeLibrary. Following prefixes are used:        
-//   Type Libraries     : LIBID_xxxx                                      
-//   CoClasses          : CLASS_xxxx                                      
-//   DISPInterfaces     : DIID_xxxx                                       
-//   Non-DISP interfaces: IID_xxxx                                        
+// GUIDS declared in the TypeLibrary. Following prefixes are used:
+//   Type Libraries     : LIBID_xxxx
+//   CoClasses          : CLASS_xxxx
+//   DISPInterfaces     : DIID_xxxx
+//   Non-DISP interfaces: IID_xxxx
 // *********************************************************************//
 const
   // TypeLibrary Major and minor versions
@@ -74,7 +74,7 @@ const
   IID_IGlueWindowEventHandler: TGUID = '{FBCB4411-153C-4AAC-8DC8-DB696C931FEB}';
 
 // *********************************************************************//
-// Declaration of Enumerations defined in Type Library                    
+// Declaration of Enumerations defined in Type Library
 // *********************************************************************//
 // Constants for enum GlueInstanceIdentity
 type
@@ -152,7 +152,7 @@ const
 type
 
 // *********************************************************************//
-// Forward declaration of types defined in TypeLibrary                    
+// Forward declaration of types defined in TypeLibrary
 // *********************************************************************//
   IGlue42 = interface;
   IGlue42Disp = dispinterface;
@@ -187,14 +187,14 @@ type
   IGlueWindowEventHandler = interface;
 
 // *********************************************************************//
-// Declaration of CoClasses defined in Type Library                       
-// (NOTE: Here we map each CoClass to its Default Interface)              
+// Declaration of CoClasses defined in Type Library
+// (NOTE: Here we map each CoClass to its Default Interface)
 // *********************************************************************//
   Glue42 = IGlue42;
 
 
 // *********************************************************************//
-// Declaration of structures, unions and aliases.                         
+// Declaration of structures, unions and aliases.
 // *********************************************************************//
 {$ALIGN 8}
   GlueInstance = record
@@ -278,6 +278,7 @@ type
     ['{DB20C8DA-CD98-4D75-8B9A-18284B7EE0D1}']
     procedure OverrideConfiguration(configuration: GlueConfiguration); safecall;
     procedure Start(Instance: GlueInstance); safecall;
+    procedure SetLogConfigurationPath(const logConfigPath: WideString); safecall;
     procedure StartWithAppName(const ApplicationName: WideString); safecall;
     procedure Stop; safecall;
     function RegisterGlueWindow(hwnd: Integer; const windowEventHandler: IGlueWindowEventHandler): IGlueWindow; safecall;
@@ -290,85 +291,85 @@ type
     procedure Subscribe(const handler: IGlueEvents); safecall;
     procedure Unsubscribe(const handler: IGlueEvents); safecall;
     function BuildGlueContextValues(const contextBuilderCallback: IGlueContextBuilderCallback): PSafeArray; safecall;
-    function RegisterMethod(const methodName: WideString; 
-                            const requestHandler: IGlueRequestHandler; const Input: WideString; 
+    function RegisterMethod(const methodName: WideString;
+                            const requestHandler: IGlueRequestHandler; const Input: WideString;
                             const Output: WideString; ObjectTypes: PSafeArray): GlueMethod; safecall;
-    function RegisterStream(const streamName: WideString; 
-                            const subscriptionHandler: IGlueSubscriptionHandler; 
-                            const Input: WideString; const Output: WideString; 
+    function RegisterStream(const streamName: WideString;
+                            const subscriptionHandler: IGlueSubscriptionHandler;
+                            const Input: WideString; const Output: WideString;
                             ObjectTypes: PSafeArray; out stream: IGlueStream): GlueMethod; safecall;
     procedure UnregisterMethod(Method: GlueMethod); safecall;
-    procedure BuildAndInvoke(const Method: WideString; 
-                             const builderCallback: IGlueContextBuilderCallback; 
-                             targets: PSafeArray; all: WordBool; identity: GlueInstanceIdentity; 
-                             const resultHandler: IGlueInvocationResultHandler; 
-                             invocationTimeoutMsecs: Int64); safecall;
-    procedure InvokeMethods(const Method: WideString; invocationArgs: PSafeArray; 
-                            targets: PSafeArray; all: WordBool; identity: GlueInstanceIdentity; 
-                            const resultHandler: IGlueInvocationResultHandler; 
-                            invocationTimeoutMsecs: Int64); safecall;
-    procedure InvokeMethod(Method: GlueMethod; invocationArgs: PSafeArray; 
-                           const resultHandler: IGlueInvocationResultHandler; 
-                           invocationTimeoutMsecs: Int64); safecall;
-    procedure SubscribeStreams(const streamName: WideString; subscriptionRequestArgs: PSafeArray; 
-                               targets: PSafeArray; all: WordBool; identity: GlueInstanceIdentity; 
-                               const streamHandler: IGlueStreamHandler; 
+    procedure BuildAndInvoke(const Method: WideString;
+                             const builderCallback: IGlueContextBuilderCallback;
+                             targets: PSafeArray; all: WordBool; identity: GlueInstanceIdentity;
+                             const resultHandler: IGlueInvocationResultHandler;
+                             invocationTimeoutMsecs: Int64; const correlationId: WideString); safecall;
+    procedure InvokeMethods(const Method: WideString; invocationArgs: PSafeArray;
+                            targets: PSafeArray; all: WordBool; identity: GlueInstanceIdentity;
+                            const resultHandler: IGlueInvocationResultHandler;
+                            invocationTimeoutMsecs: Int64; const correlationId: WideString); safecall;
+    procedure InvokeMethod(Method: GlueMethod; invocationArgs: PSafeArray;
+                           const resultHandler: IGlueInvocationResultHandler;
+                           invocationTimeoutMsecs: Int64; const correlationId: WideString); safecall;
+    procedure SubscribeStreams(const streamName: WideString; subscriptionRequestArgs: PSafeArray;
+                               targets: PSafeArray; all: WordBool; identity: GlueInstanceIdentity;
+                               const streamHandler: IGlueStreamHandler;
                                invocationTimeoutMsecs: Int64); safecall;
-    procedure SubscribeStream(stream: GlueMethod; subscriptionRequestArgs: PSafeArray; 
-                              const streamHandler: IGlueStreamHandler; 
+    procedure SubscribeStream(stream: GlueMethod; subscriptionRequestArgs: PSafeArray;
+                              const streamHandler: IGlueStreamHandler;
                               subscriptionTimeoutMsecs: Int64); safecall;
-    function InvokeSync(const methodName: WideString; const argsAsJson: WideString; 
+    function InvokeSync(const methodName: WideString; const argsAsJson: WideString;
                         const resultFieldPath: WideString; const targetRegex: WideString): WideString; safecall;
-    procedure InvokeAsync(const correlationId: WideString; const methodName: WideString; 
-                          const argsAsJson: WideString; const resultFieldPath: WideString; 
+    procedure InvokeAsync(const correlationId: WideString; const methodName: WideString;
+                          const argsAsJson: WideString; const resultFieldPath: WideString;
                           const targetRegex: WideString); safecall;
-    procedure SubscribeStreamInSink(const correlationId: WideString; const streamName: WideString; 
-                                    const argsAsJson: WideString; 
-                                    const resultFieldPath: WideString; 
-                                    const targetRegex: WideString; 
-                                    const filterFieldPath: WideString; 
+    procedure SubscribeStreamInSink(const correlationId: WideString; const streamName: WideString;
+                                    const argsAsJson: WideString;
+                                    const resultFieldPath: WideString;
+                                    const targetRegex: WideString;
+                                    const filterFieldPath: WideString;
                                     const filterDataRegex: WideString); safecall;
-    procedure RegisterMethodInSink(const correlationId: WideString; const methodName: WideString; 
-                                   const inputSignature: WideString; 
-                                   const outputSignature: WideString; ObjectTypes: PSafeArray; 
-                                   const invocationFieldPath: WideString; 
-                                   const targetRegex: WideString; 
-                                   const filterFieldPath: WideString; 
+    procedure RegisterMethodInSink(const correlationId: WideString; const methodName: WideString;
+                                   const inputSignature: WideString;
+                                   const outputSignature: WideString; ObjectTypes: PSafeArray;
+                                   const invocationFieldPath: WideString;
+                                   const targetRegex: WideString;
+                                   const filterFieldPath: WideString;
                                    const filterDataRegex: WideString); safecall;
-    procedure RegisterVariantMethodInSink(const correlationId: WideString; 
-                                          const methodName: WideString; 
-                                          const inputSignature: WideString; 
-                                          const outputSignature: WideString; 
-                                          ObjectTypes: PSafeArray; 
-                                          const invocationFieldPath: WideString; 
-                                          const targetRegex: WideString; 
-                                          const filterFieldPath: WideString; 
+    procedure RegisterVariantMethodInSink(const correlationId: WideString;
+                                          const methodName: WideString;
+                                          const inputSignature: WideString;
+                                          const outputSignature: WideString;
+                                          ObjectTypes: PSafeArray;
+                                          const invocationFieldPath: WideString;
+                                          const targetRegex: WideString;
+                                          const filterFieldPath: WideString;
                                           const filterDataRegex: WideString); safecall;
-    procedure RegisterVoidMethodInSink(const correlationId: WideString; 
-                                       const methodName: WideString; 
-                                       const inputSignature: WideString; ObjectTypes: PSafeArray; 
-                                       const invocationFieldPath: WideString; 
-                                       const targetRegex: WideString; 
-                                       const filterFieldPath: WideString; 
+    procedure RegisterVoidMethodInSink(const correlationId: WideString;
+                                       const methodName: WideString;
+                                       const inputSignature: WideString; ObjectTypes: PSafeArray;
+                                       const invocationFieldPath: WideString;
+                                       const targetRegex: WideString;
+                                       const filterFieldPath: WideString;
                                        const filterDataRegex: WideString); safecall;
-    procedure RegisterSingleBranchStream(const correlationId: WideString; 
-                                         const streamName: WideString; 
-                                         const requestSignature: WideString; 
+    procedure RegisterSingleBranchStream(const correlationId: WideString;
+                                         const streamName: WideString;
+                                         const requestSignature: WideString;
                                          const streamSignature: WideString); safecall;
-    procedure AddCorrelationInterest(const correlationId: WideString; const interestId: WideString; 
-                                     const fieldPath: WideString; 
-                                     const filterFieldPath: WideString; 
+    procedure AddCorrelationInterest(const correlationId: WideString; const interestId: WideString;
+                                     const fieldPath: WideString;
+                                     const filterFieldPath: WideString;
                                      const filterDataRegex: WideString); safecall;
-    procedure RegisterStreamInSink(const correlationId: WideString; const streamName: WideString; 
-                                   const requestSignature: WideString; 
-                                   const streamSignature: WideString; 
-                                   const requestFieldPath: WideString; 
-                                   const targetRegex: WideString; 
-                                   const filterFieldPath: WideString; 
+    procedure RegisterStreamInSink(const correlationId: WideString; const streamName: WideString;
+                                   const requestSignature: WideString;
+                                   const streamSignature: WideString;
+                                   const requestFieldPath: WideString;
+                                   const targetRegex: WideString;
+                                   const filterFieldPath: WideString;
                                    const filterDataRegex: WideString); safecall;
-    procedure YieldCallbackData(const correlationId: WideString; const callbackId: WideString; 
+    procedure YieldCallbackData(const correlationId: WideString; const callbackId: WideString;
                                 const callbackData: WideString); safecall;
-    procedure YieldCallbackVariantData(const correlationId: WideString; 
+    procedure YieldCallbackVariantData(const correlationId: WideString;
                                        const callbackId: WideString; callbackData: OleVariant); safecall;
     procedure RegisterGlueWindowInSink(const correlationId: WideString; const hwnd: WideString); safecall;
     function JsonToVariant(const json: WideString): PSafeArray; safecall;
@@ -376,16 +377,17 @@ type
     function GetMethodNamesForTarget(const target: WideString): PSafeArray; safecall;
     function GetTargets: PSafeArray; safecall;
     function GetChannels: PSafeArray; safecall;
-    procedure InvokeAsyncVariantData(const correlationId: WideString; const methodName: WideString; 
-                                     args: OleVariant; const resultFieldPath: WideString; 
+    procedure InvokeAsyncVariantData(const correlationId: WideString; const methodName: WideString;
+                                     args: OleVariant; const resultFieldPath: WideString;
                                      const targetRegex: WideString); safecall;
-    procedure SubscribeChannel(const correlationId: WideString; const channel: WideString; 
+    procedure SubscribeChannel(const correlationId: WideString; const channel: WideString;
                                const resultFieldPath: WideString); safecall;
-    procedure SetChannelData(const channel: WideString; const fieldPath: WideString; 
+    procedure SetChannelData(const channel: WideString; const fieldPath: WideString;
                              const data: WideString); safecall;
-    procedure G4O_XL_OpenSheet(const correlationId: WideString; const sheetName: WideString; 
-                               columnNames: PSafeArray; columnValidationTypes: PSafeArray; 
+    procedure G4O_XL_OpenSheet(const correlationId: WideString; const sheetName: WideString;
+                               columnNames: PSafeArray; columnValidationTypes: PSafeArray;
                                data: OleVariant); safecall;
+    procedure Log(level: Byte; const Message: WideString); safecall;
   end;
 
 // *********************************************************************//
@@ -397,127 +399,129 @@ type
     ['{DB20C8DA-CD98-4D75-8B9A-18284B7EE0D1}']
     procedure OverrideConfiguration(configuration: {NOT_OLEAUTO(GlueConfiguration)}OleVariant); dispid 1610743808;
     procedure Start(Instance: {NOT_OLEAUTO(GlueInstance)}OleVariant); dispid 1610743809;
-    procedure StartWithAppName(const ApplicationName: WideString); dispid 1610743810;
-    procedure Stop; dispid 1610743811;
-    function RegisterGlueWindow(hwnd: Integer; const windowEventHandler: IGlueWindowEventHandler): IGlueWindow; dispid 1610743812;
-    function GetInstance: {NOT_OLEAUTO(GlueInstance)}OleVariant; dispid 1610743813;
-    function GetKnownContexts: {NOT_OLEAUTO(PSafeArray)}OleVariant; dispid 1610743814;
-    procedure GetGlueContext(const contextName: WideString; const handler: IGlueContextHandler); dispid 1610743815;
-    function GetAllInstances: {NOT_OLEAUTO(PSafeArray)}OleVariant; dispid 1610743816;
-    function GetAllMethods: {NOT_OLEAUTO(PSafeArray)}OleVariant; dispid 1610743817;
-    function GetMethodsForInstance(Instance: {NOT_OLEAUTO(GlueInstance)}OleVariant; 
-                                   identity: GlueInstanceIdentity): {NOT_OLEAUTO(PSafeArray)}OleVariant; dispid 1610743818;
-    procedure Subscribe(const handler: IGlueEvents); dispid 1610743819;
-    procedure Unsubscribe(const handler: IGlueEvents); dispid 1610743820;
-    function BuildGlueContextValues(const contextBuilderCallback: IGlueContextBuilderCallback): {NOT_OLEAUTO(PSafeArray)}OleVariant; dispid 1610743821;
-    function RegisterMethod(const methodName: WideString; 
-                            const requestHandler: IGlueRequestHandler; const Input: WideString; 
-                            const Output: WideString; 
-                            ObjectTypes: {NOT_OLEAUTO(PSafeArray)}OleVariant): {NOT_OLEAUTO(GlueMethod)}OleVariant; dispid 1610743822;
-    function RegisterStream(const streamName: WideString; 
-                            const subscriptionHandler: IGlueSubscriptionHandler; 
-                            const Input: WideString; const Output: WideString; 
-                            ObjectTypes: {NOT_OLEAUTO(PSafeArray)}OleVariant; 
-                            out stream: IGlueStream): {NOT_OLEAUTO(GlueMethod)}OleVariant; dispid 1610743823;
-    procedure UnregisterMethod(Method: {NOT_OLEAUTO(GlueMethod)}OleVariant); dispid 1610743824;
-    procedure BuildAndInvoke(const Method: WideString; 
-                             const builderCallback: IGlueContextBuilderCallback; 
-                             targets: {NOT_OLEAUTO(PSafeArray)}OleVariant; all: WordBool; 
-                             identity: GlueInstanceIdentity; 
-                             const resultHandler: IGlueInvocationResultHandler; 
-                             invocationTimeoutMsecs: Int64); dispid 1610743825;
-    procedure InvokeMethods(const Method: WideString; 
-                            invocationArgs: {NOT_OLEAUTO(PSafeArray)}OleVariant; 
-                            targets: {NOT_OLEAUTO(PSafeArray)}OleVariant; all: WordBool; 
-                            identity: GlueInstanceIdentity; 
-                            const resultHandler: IGlueInvocationResultHandler; 
-                            invocationTimeoutMsecs: Int64); dispid 1610743826;
-    procedure InvokeMethod(Method: {NOT_OLEAUTO(GlueMethod)}OleVariant; 
-                           invocationArgs: {NOT_OLEAUTO(PSafeArray)}OleVariant; 
-                           const resultHandler: IGlueInvocationResultHandler; 
-                           invocationTimeoutMsecs: Int64); dispid 1610743827;
-    procedure SubscribeStreams(const streamName: WideString; 
-                               subscriptionRequestArgs: {NOT_OLEAUTO(PSafeArray)}OleVariant; 
-                               targets: {NOT_OLEAUTO(PSafeArray)}OleVariant; all: WordBool; 
-                               identity: GlueInstanceIdentity; 
-                               const streamHandler: IGlueStreamHandler; 
-                               invocationTimeoutMsecs: Int64); dispid 1610743828;
-    procedure SubscribeStream(stream: {NOT_OLEAUTO(GlueMethod)}OleVariant; 
-                              subscriptionRequestArgs: {NOT_OLEAUTO(PSafeArray)}OleVariant; 
-                              const streamHandler: IGlueStreamHandler; 
-                              subscriptionTimeoutMsecs: Int64); dispid 1610743829;
-    function InvokeSync(const methodName: WideString; const argsAsJson: WideString; 
-                        const resultFieldPath: WideString; const targetRegex: WideString): WideString; dispid 1610743830;
-    procedure InvokeAsync(const correlationId: WideString; const methodName: WideString; 
-                          const argsAsJson: WideString; const resultFieldPath: WideString; 
-                          const targetRegex: WideString); dispid 1610743831;
-    procedure SubscribeStreamInSink(const correlationId: WideString; const streamName: WideString; 
-                                    const argsAsJson: WideString; 
-                                    const resultFieldPath: WideString; 
-                                    const targetRegex: WideString; 
-                                    const filterFieldPath: WideString; 
-                                    const filterDataRegex: WideString); dispid 1610743832;
-    procedure RegisterMethodInSink(const correlationId: WideString; const methodName: WideString; 
-                                   const inputSignature: WideString; 
-                                   const outputSignature: WideString; 
-                                   ObjectTypes: {NOT_OLEAUTO(PSafeArray)}OleVariant; 
-                                   const invocationFieldPath: WideString; 
-                                   const targetRegex: WideString; 
-                                   const filterFieldPath: WideString; 
-                                   const filterDataRegex: WideString); dispid 1610743833;
-    procedure RegisterVariantMethodInSink(const correlationId: WideString; 
-                                          const methodName: WideString; 
-                                          const inputSignature: WideString; 
-                                          const outputSignature: WideString; 
-                                          ObjectTypes: {NOT_OLEAUTO(PSafeArray)}OleVariant; 
-                                          const invocationFieldPath: WideString; 
-                                          const targetRegex: WideString; 
-                                          const filterFieldPath: WideString; 
-                                          const filterDataRegex: WideString); dispid 1610743834;
-    procedure RegisterVoidMethodInSink(const correlationId: WideString; 
-                                       const methodName: WideString; 
-                                       const inputSignature: WideString; 
-                                       ObjectTypes: {NOT_OLEAUTO(PSafeArray)}OleVariant; 
-                                       const invocationFieldPath: WideString; 
-                                       const targetRegex: WideString; 
-                                       const filterFieldPath: WideString; 
-                                       const filterDataRegex: WideString); dispid 1610743835;
-    procedure RegisterSingleBranchStream(const correlationId: WideString; 
-                                         const streamName: WideString; 
-                                         const requestSignature: WideString; 
-                                         const streamSignature: WideString); dispid 1610743836;
-    procedure AddCorrelationInterest(const correlationId: WideString; const interestId: WideString; 
-                                     const fieldPath: WideString; 
-                                     const filterFieldPath: WideString; 
-                                     const filterDataRegex: WideString); dispid 1610743837;
-    procedure RegisterStreamInSink(const correlationId: WideString; const streamName: WideString; 
-                                   const requestSignature: WideString; 
-                                   const streamSignature: WideString; 
-                                   const requestFieldPath: WideString; 
-                                   const targetRegex: WideString; 
-                                   const filterFieldPath: WideString; 
-                                   const filterDataRegex: WideString); dispid 1610743838;
-    procedure YieldCallbackData(const correlationId: WideString; const callbackId: WideString; 
-                                const callbackData: WideString); dispid 1610743839;
-    procedure YieldCallbackVariantData(const correlationId: WideString; 
-                                       const callbackId: WideString; callbackData: OleVariant); dispid 1610743840;
-    procedure RegisterGlueWindowInSink(const correlationId: WideString; const hwnd: WideString); dispid 1610743841;
-    function JsonToVariant(const json: WideString): {NOT_OLEAUTO(PSafeArray)}OleVariant; dispid 1610743842;
-    procedure CloseResource(const correlationId: WideString); dispid 1610743843;
-    function GetMethodNamesForTarget(const target: WideString): {NOT_OLEAUTO(PSafeArray)}OleVariant; dispid 1610743844;
-    function GetTargets: {NOT_OLEAUTO(PSafeArray)}OleVariant; dispid 1610743845;
-    function GetChannels: {NOT_OLEAUTO(PSafeArray)}OleVariant; dispid 1610743846;
-    procedure InvokeAsyncVariantData(const correlationId: WideString; const methodName: WideString; 
-                                     args: OleVariant; const resultFieldPath: WideString; 
-                                     const targetRegex: WideString); dispid 1610743847;
-    procedure SubscribeChannel(const correlationId: WideString; const channel: WideString; 
-                               const resultFieldPath: WideString); dispid 1610743848;
-    procedure SetChannelData(const channel: WideString; const fieldPath: WideString; 
-                             const data: WideString); dispid 1610743849;
-    procedure G4O_XL_OpenSheet(const correlationId: WideString; const sheetName: WideString; 
-                               columnNames: {NOT_OLEAUTO(PSafeArray)}OleVariant; 
-                               columnValidationTypes: {NOT_OLEAUTO(PSafeArray)}OleVariant; 
-                               data: OleVariant); dispid 1610743850;
+    procedure SetLogConfigurationPath(const logConfigPath: WideString); dispid 1610743810;
+    procedure StartWithAppName(const ApplicationName: WideString); dispid 1610743811;
+    procedure Stop; dispid 1610743812;
+    function RegisterGlueWindow(hwnd: Integer; const windowEventHandler: IGlueWindowEventHandler): IGlueWindow; dispid 1610743813;
+    function GetInstance: {NOT_OLEAUTO(GlueInstance)}OleVariant; dispid 1610743814;
+    function GetKnownContexts: {NOT_OLEAUTO(PSafeArray)}OleVariant; dispid 1610743815;
+    procedure GetGlueContext(const contextName: WideString; const handler: IGlueContextHandler); dispid 1610743816;
+    function GetAllInstances: {NOT_OLEAUTO(PSafeArray)}OleVariant; dispid 1610743817;
+    function GetAllMethods: {NOT_OLEAUTO(PSafeArray)}OleVariant; dispid 1610743818;
+    function GetMethodsForInstance(Instance: {NOT_OLEAUTO(GlueInstance)}OleVariant;
+                                   identity: GlueInstanceIdentity): {NOT_OLEAUTO(PSafeArray)}OleVariant; dispid 1610743819;
+    procedure Subscribe(const handler: IGlueEvents); dispid 1610743820;
+    procedure Unsubscribe(const handler: IGlueEvents); dispid 1610743821;
+    function BuildGlueContextValues(const contextBuilderCallback: IGlueContextBuilderCallback): {NOT_OLEAUTO(PSafeArray)}OleVariant; dispid 1610743822;
+    function RegisterMethod(const methodName: WideString;
+                            const requestHandler: IGlueRequestHandler; const Input: WideString;
+                            const Output: WideString;
+                            ObjectTypes: {NOT_OLEAUTO(PSafeArray)}OleVariant): {NOT_OLEAUTO(GlueMethod)}OleVariant; dispid 1610743823;
+    function RegisterStream(const streamName: WideString;
+                            const subscriptionHandler: IGlueSubscriptionHandler;
+                            const Input: WideString; const Output: WideString;
+                            ObjectTypes: {NOT_OLEAUTO(PSafeArray)}OleVariant;
+                            out stream: IGlueStream): {NOT_OLEAUTO(GlueMethod)}OleVariant; dispid 1610743824;
+    procedure UnregisterMethod(Method: {NOT_OLEAUTO(GlueMethod)}OleVariant); dispid 1610743825;
+    procedure BuildAndInvoke(const Method: WideString;
+                             const builderCallback: IGlueContextBuilderCallback;
+                             targets: {NOT_OLEAUTO(PSafeArray)}OleVariant; all: WordBool;
+                             identity: GlueInstanceIdentity;
+                             const resultHandler: IGlueInvocationResultHandler;
+                             invocationTimeoutMsecs: Int64; const correlationId: WideString); dispid 1610743826;
+    procedure InvokeMethods(const Method: WideString;
+                            invocationArgs: {NOT_OLEAUTO(PSafeArray)}OleVariant;
+                            targets: {NOT_OLEAUTO(PSafeArray)}OleVariant; all: WordBool;
+                            identity: GlueInstanceIdentity;
+                            const resultHandler: IGlueInvocationResultHandler;
+                            invocationTimeoutMsecs: Int64; const correlationId: WideString); dispid 1610743827;
+    procedure InvokeMethod(Method: {NOT_OLEAUTO(GlueMethod)}OleVariant;
+                           invocationArgs: {NOT_OLEAUTO(PSafeArray)}OleVariant;
+                           const resultHandler: IGlueInvocationResultHandler;
+                           invocationTimeoutMsecs: Int64; const correlationId: WideString); dispid 1610743828;
+    procedure SubscribeStreams(const streamName: WideString;
+                               subscriptionRequestArgs: {NOT_OLEAUTO(PSafeArray)}OleVariant;
+                               targets: {NOT_OLEAUTO(PSafeArray)}OleVariant; all: WordBool;
+                               identity: GlueInstanceIdentity;
+                               const streamHandler: IGlueStreamHandler;
+                               invocationTimeoutMsecs: Int64); dispid 1610743829;
+    procedure SubscribeStream(stream: {NOT_OLEAUTO(GlueMethod)}OleVariant;
+                              subscriptionRequestArgs: {NOT_OLEAUTO(PSafeArray)}OleVariant;
+                              const streamHandler: IGlueStreamHandler;
+                              subscriptionTimeoutMsecs: Int64); dispid 1610743830;
+    function InvokeSync(const methodName: WideString; const argsAsJson: WideString;
+                        const resultFieldPath: WideString; const targetRegex: WideString): WideString; dispid 1610743831;
+    procedure InvokeAsync(const correlationId: WideString; const methodName: WideString;
+                          const argsAsJson: WideString; const resultFieldPath: WideString;
+                          const targetRegex: WideString); dispid 1610743832;
+    procedure SubscribeStreamInSink(const correlationId: WideString; const streamName: WideString;
+                                    const argsAsJson: WideString;
+                                    const resultFieldPath: WideString;
+                                    const targetRegex: WideString;
+                                    const filterFieldPath: WideString;
+                                    const filterDataRegex: WideString); dispid 1610743833;
+    procedure RegisterMethodInSink(const correlationId: WideString; const methodName: WideString;
+                                   const inputSignature: WideString;
+                                   const outputSignature: WideString;
+                                   ObjectTypes: {NOT_OLEAUTO(PSafeArray)}OleVariant;
+                                   const invocationFieldPath: WideString;
+                                   const targetRegex: WideString;
+                                   const filterFieldPath: WideString;
+                                   const filterDataRegex: WideString); dispid 1610743834;
+    procedure RegisterVariantMethodInSink(const correlationId: WideString;
+                                          const methodName: WideString;
+                                          const inputSignature: WideString;
+                                          const outputSignature: WideString;
+                                          ObjectTypes: {NOT_OLEAUTO(PSafeArray)}OleVariant;
+                                          const invocationFieldPath: WideString;
+                                          const targetRegex: WideString;
+                                          const filterFieldPath: WideString;
+                                          const filterDataRegex: WideString); dispid 1610743835;
+    procedure RegisterVoidMethodInSink(const correlationId: WideString;
+                                       const methodName: WideString;
+                                       const inputSignature: WideString;
+                                       ObjectTypes: {NOT_OLEAUTO(PSafeArray)}OleVariant;
+                                       const invocationFieldPath: WideString;
+                                       const targetRegex: WideString;
+                                       const filterFieldPath: WideString;
+                                       const filterDataRegex: WideString); dispid 1610743836;
+    procedure RegisterSingleBranchStream(const correlationId: WideString;
+                                         const streamName: WideString;
+                                         const requestSignature: WideString;
+                                         const streamSignature: WideString); dispid 1610743837;
+    procedure AddCorrelationInterest(const correlationId: WideString; const interestId: WideString;
+                                     const fieldPath: WideString;
+                                     const filterFieldPath: WideString;
+                                     const filterDataRegex: WideString); dispid 1610743838;
+    procedure RegisterStreamInSink(const correlationId: WideString; const streamName: WideString;
+                                   const requestSignature: WideString;
+                                   const streamSignature: WideString;
+                                   const requestFieldPath: WideString;
+                                   const targetRegex: WideString;
+                                   const filterFieldPath: WideString;
+                                   const filterDataRegex: WideString); dispid 1610743839;
+    procedure YieldCallbackData(const correlationId: WideString; const callbackId: WideString;
+                                const callbackData: WideString); dispid 1610743840;
+    procedure YieldCallbackVariantData(const correlationId: WideString;
+                                       const callbackId: WideString; callbackData: OleVariant); dispid 1610743841;
+    procedure RegisterGlueWindowInSink(const correlationId: WideString; const hwnd: WideString); dispid 1610743842;
+    function JsonToVariant(const json: WideString): {NOT_OLEAUTO(PSafeArray)}OleVariant; dispid 1610743843;
+    procedure CloseResource(const correlationId: WideString); dispid 1610743844;
+    function GetMethodNamesForTarget(const target: WideString): {NOT_OLEAUTO(PSafeArray)}OleVariant; dispid 1610743845;
+    function GetTargets: {NOT_OLEAUTO(PSafeArray)}OleVariant; dispid 1610743846;
+    function GetChannels: {NOT_OLEAUTO(PSafeArray)}OleVariant; dispid 1610743847;
+    procedure InvokeAsyncVariantData(const correlationId: WideString; const methodName: WideString;
+                                     args: OleVariant; const resultFieldPath: WideString;
+                                     const targetRegex: WideString); dispid 1610743848;
+    procedure SubscribeChannel(const correlationId: WideString; const channel: WideString;
+                               const resultFieldPath: WideString); dispid 1610743849;
+    procedure SetChannelData(const channel: WideString; const fieldPath: WideString;
+                             const data: WideString); dispid 1610743850;
+    procedure G4O_XL_OpenSheet(const correlationId: WideString; const sheetName: WideString;
+                               columnNames: {NOT_OLEAUTO(PSafeArray)}OleVariant;
+                               columnValidationTypes: {NOT_OLEAUTO(PSafeArray)}OleVariant;
+                               data: OleVariant); dispid 1610743851;
+    procedure Log(level: Byte; const Message: WideString); dispid 1610743852;
   end;
 
 // *********************************************************************//
@@ -571,7 +575,7 @@ type
     procedure AddDatetimeArray(const Name: WideString; Value: PSafeArray); safecall;
     procedure AddLongArray(const Name: WideString; Value: PSafeArray); safecall;
     procedure AddDoubleArray(const Name: WideString; Value: PSafeArray); safecall;
-    procedure BuildComposite(const Name: WideString; const callback: IGlueContextBuilderCallback; 
+    procedure BuildComposite(const Name: WideString; const callback: IGlueContextBuilderCallback;
                              IsArray: WordBool); safecall;
     procedure BuildTuple(const Name: WideString; const callback: IGlueContextBuilderCallback); safecall;
     procedure AddComposite(const Name: WideString; composite: PSafeArray; IsArray: WordBool); safecall;
@@ -601,10 +605,10 @@ type
     procedure AddDatetimeArray(const Name: WideString; Value: {NOT_OLEAUTO(PSafeArray)}OleVariant); dispid 1610743817;
     procedure AddLongArray(const Name: WideString; Value: {NOT_OLEAUTO(PSafeArray)}OleVariant); dispid 1610743818;
     procedure AddDoubleArray(const Name: WideString; Value: {NOT_OLEAUTO(PSafeArray)}OleVariant); dispid 1610743819;
-    procedure BuildComposite(const Name: WideString; const callback: IGlueContextBuilderCallback; 
+    procedure BuildComposite(const Name: WideString; const callback: IGlueContextBuilderCallback;
                              IsArray: WordBool); dispid 1610743820;
     procedure BuildTuple(const Name: WideString; const callback: IGlueContextBuilderCallback); dispid 1610743821;
-    procedure AddComposite(const Name: WideString; composite: {NOT_OLEAUTO(PSafeArray)}OleVariant; 
+    procedure AddComposite(const Name: WideString; composite: {NOT_OLEAUTO(PSafeArray)}OleVariant;
                            IsArray: WordBool); dispid 1610743822;
     procedure AddTuple(const Name: WideString; Tuple: {NOT_OLEAUTO(PSafeArray)}OleVariant); dispid 1610743823;
     procedure AddContextValue(GlueContextValue: {NOT_OLEAUTO(GlueContextValue)}OleVariant); dispid 1610743824;
@@ -672,10 +676,10 @@ type
   IGlueEventSink = dispinterface
     ['{0EE5A248-F02A-4551-8745-437F6AFAAB4D}']
     procedure OnGlueVariantResponse(const correlationId: WideString; data: OleVariant); dispid 1610743808;
-    procedure OnGlueVariantInvoke(const correlationId: WideString; data: OleVariant; 
+    procedure OnGlueVariantInvoke(const correlationId: WideString; data: OleVariant;
                                   const callbackId: WideString); dispid 1610743809;
     procedure OnGlueResponse(const correlationId: WideString; const jsonData: WideString); dispid 1610743810;
-    procedure OnGlueInvoke(const correlationId: WideString; const jsonData: WideString; 
+    procedure OnGlueInvoke(const correlationId: WideString; const jsonData: WideString;
                            const callbackId: WideString); dispid 1610743811;
   end;
 
@@ -810,7 +814,7 @@ type
     ['{A384126A-06D1-41CE-942C-4376D4574F4B}']
     function StreamOpened(stream: GlueMethod; const glueStreamSubscription: IGlueStreamSubscription): HResult; stdcall;
     function HandleStreamData(stream: GlueMethod; data: PSafeArray): HResult; stdcall;
-    function HandleStreamStatus(stream: GlueMethod; state: GlueStreamState; 
+    function HandleStreamStatus(stream: GlueMethod; state: GlueStreamState;
                                 const Message: WideString; dateTime: Int64): HResult; stdcall;
     function StreamClosed(stream: GlueMethod): HResult; stdcall;
   end;
@@ -866,13 +870,13 @@ type
 // *********************************************************************//
   IGlueSubscriptionHandler = interface(IUnknown)
     ['{DAA04777-BD8E-4180-9021-48A0807A2E1D}']
-    function HandleSubscriptionRequest(stream: GlueMethod; caller: GlueInstance; 
-                                       requestValues: PSafeArray; 
+    function HandleSubscriptionRequest(stream: GlueMethod; caller: GlueInstance;
+                                       requestValues: PSafeArray;
                                        const callback: IGlueServerSubscriptionCallback): HResult; stdcall;
-    function HandleSubscriber(subscriberInstance: GlueInstance; 
-                              const glueStreamSubscriber: IGlueStreamSubscriber; 
+    function HandleSubscriber(subscriberInstance: GlueInstance;
+                              const glueStreamSubscriber: IGlueStreamSubscriber;
                               requestValues: PSafeArray): HResult; stdcall;
-    function HandleSubscriberLost(streamSubscriber: GlueInstance; 
+    function HandleSubscriberLost(streamSubscriber: GlueInstance;
                                   const glueStreamSubscriber: IGlueStreamSubscriber): HResult; stdcall;
   end;
 
@@ -883,8 +887,8 @@ type
 // *********************************************************************//
   IGlueRequestHandler = interface(IUnknown)
     ['{81671796-A690-476B-85EA-94326B7CA2B5}']
-    function HandleInvocationRequest(Method: GlueMethod; caller: GlueInstance; 
-                                     requestValues: PSafeArray; 
+    function HandleInvocationRequest(Method: GlueMethod; caller: GlueInstance;
+                                     requestValues: PSafeArray;
                                      const resultCallback: IGlueServerMethodResultCallback): HResult; stdcall;
   end;
 
@@ -915,7 +919,7 @@ type
 // *********************************************************************//
   IGlueInvocationResultHandler = interface(IUnknown)
     ['{3549297E-57A9-4F65-9183-D95232E55469}']
-    function HandleResult(invocationResult: PSafeArray): HResult; stdcall;
+    function HandleResult(invocationResult: PSafeArray; const correlationId: WideString): HResult; stdcall;
   end;
 
 // *********************************************************************//
@@ -925,19 +929,19 @@ type
 // *********************************************************************//
   IGlueWindowEventHandler = interface(IUnknown)
     ['{FBCB4411-153C-4AAC-8DC8-DB696C931FEB}']
-    function HandleChannelData(const glueWindow: IGlueWindow; 
+    function HandleChannelData(const glueWindow: IGlueWindow;
                                const channelUpdate: IGlueContextUpdate): HResult; stdcall;
-    function HandleChannelChanged(const glueWindow: IGlueWindow; const channel: IGlueContext; 
+    function HandleChannelChanged(const glueWindow: IGlueWindow; const channel: IGlueContext;
                                   prevChannel: GlueContext): HResult; stdcall;
     function HandleWindowDestroyed(const glueWindow: IGlueWindow): HResult; stdcall;
   end;
 
 // *********************************************************************//
-// The Class CoGlue42 provides a Create and CreateRemote method to          
-// create instances of the default interface IGlue42 exposed by              
-// the CoClass Glue42. The functions are intended to be used by             
-// clients wishing to automate the CoClass objects exposed by the         
-// server of this typelibrary.                                            
+// The Class CoGlue42 provides a Create and CreateRemote method to
+// create instances of the default interface IGlue42 exposed by
+// the CoClass Glue42. The functions are intended to be used by
+// clients wishing to automate the CoClass objects exposed by the
+// server of this typelibrary.
 // *********************************************************************//
   CoGlue42 = class
     class function Create: IGlue42;

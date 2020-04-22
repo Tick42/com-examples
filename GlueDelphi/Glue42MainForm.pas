@@ -241,7 +241,7 @@ var
 //  targets: TGlueInstanceArray;
 begin
   handler := TGlueResultHandler.Create(
-    procedure(results: TGlueInvocationResultArray)
+    procedure(results: TGlueInvocationResultArray; correlationId: string)
     var
       I: Integer;
     begin
@@ -262,7 +262,7 @@ begin
 
   // invoke ALL methods matching this name and handle the result in the lambda
   G42.InvokeMethods(edtMethodName.Text, args, nil, true,
-    GlueInstanceIdentity_None, handler, 5000);
+    GlueInstanceIdentity_None, handler, 5000, '');
 
   SafeArrayDestroy(args);
 end;
@@ -642,7 +642,7 @@ begin
 
       // invoke this particular method and handle the result with a lambda
       G42.InvokeMethod(gm, CreateSampleArgs, TGlueResultHandler.Create(
-        procedure(results: TGlueInvocationResultArray)
+        procedure(results: TGlueInvocationResultArray; correlationId: string)
         var
           I: Integer;
         begin
@@ -653,7 +653,7 @@ begin
             TraverseGlueContextValuesSafeArray(results[I].Result.Values,
               memLog.Lines);
           end;
-        end), -1);
+        end), -1, '');
     end;
   end;
 end;

@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 0
-  Top = 0
+  Left = 2000
+  Top = 200
   Caption = 'Form1'
   ClientHeight = 649
   ClientWidth = 926
@@ -11,6 +11,7 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poDesigned
   Scaled = False
   OnClose = FormClose
   OnCreate = FormCreate
@@ -20,7 +21,7 @@ object Form1: TForm1
     Left = 487
     Top = 89
     Width = 439
-    Height = 375
+    Height = 335
     Align = alRight
     Caption = 'Methods'
     TabOrder = 0
@@ -37,7 +38,7 @@ object Form1: TForm1
       Left = 2
       Top = 36
       Width = 435
-      Height = 337
+      Height = 297
       Align = alClient
       ItemHeight = 13
       TabOrder = 1
@@ -100,7 +101,7 @@ object Form1: TForm1
     Left = 0
     Top = 89
     Width = 487
-    Height = 375
+    Height = 335
     Align = alClient
     Caption = 'Channel data'
     TabOrder = 2
@@ -108,7 +109,7 @@ object Form1: TForm1
       Left = 2
       Top = 15
       Width = 483
-      Height = 358
+      Height = 318
       Align = alClient
       Indent = 19
       TabOrder = 0
@@ -116,9 +117,9 @@ object Form1: TForm1
   end
   object GroupBox4: TGroupBox
     Left = 0
-    Top = 464
+    Top = 424
     Width = 926
-    Height = 185
+    Height = 225
     Align = alBottom
     Caption = 'Log'
     TabOrder = 3
@@ -126,7 +127,7 @@ object Form1: TForm1
       Left = 2
       Top = 15
       Width = 922
-      Height = 168
+      Height = 208
       Align = alClient
       TabOrder = 0
     end
