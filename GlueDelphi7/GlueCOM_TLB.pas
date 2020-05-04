@@ -12,7 +12,7 @@ unit GlueCOM_TLB;
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
-// File generated on 2020-04-24 10:53:33 PM from Type Library described below.
+// File generated on 2020-05-04 7:54:28 PM from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: A:\Work\stash\dot-net-glue-com\GlueCom\bin\Debug\GlueCOM.dll (1)
@@ -1022,7 +1022,7 @@ type
   IAppAnnouncer = interface(IDispatch)
     ['{32EE037F-139B-4685-8BE1-AAC7A082507F}']
     function RegisterAppInstance(hwnd: Integer; const glueApp: IGlueApp): IGlueWindow; safecall;
-    procedure AnnouceAppCreationFailure(const error: WideString); safecall;
+    procedure AnnounceAppCreationFailure(const error: WideString); safecall;
   end;
 
 // *********************************************************************//
@@ -1033,7 +1033,7 @@ type
   IAppAnnouncerDisp = dispinterface
     ['{32EE037F-139B-4685-8BE1-AAC7A082507F}']
     function RegisterAppInstance(hwnd: Integer; const glueApp: IGlueApp): IGlueWindow; dispid 1610743808;
-    procedure AnnouceAppCreationFailure(const error: WideString); dispid 1610743809;
+    procedure AnnounceAppCreationFailure(const error: WideString); dispid 1610743809;
   end;
 
 // *********************************************************************//
