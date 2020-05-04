@@ -11,7 +11,7 @@ type
   Exception = SysUtils.Exception;
   Pointer = System.Pointer;
 
-  TForm1 = class(TForm, IGlueEvents, IGlueWindowEventHandler)
+  TForm1 = class(TForm, IGlueEvents, IGlueWindowEventHandler, IAppFactory)
     GroupBox4: TGroupBox;
     memLog: TMemo;
     GroupBox2: TGroupBox;
@@ -63,6 +63,8 @@ type
     function HandleException(const ex: _Exception): HResult; stdcall;
 
   protected
+    function CreateApp(const appDefName: WideString; state: GlueValue;
+      const announcer: IAppAnnouncer): HResult; stdcall;
     // implements IGlueWindowEventHandler - channel updates for
     // registered Glue Window
 
@@ -116,7 +118,7 @@ procedure BuildTranslatedValueTree(name: string; gv: TGlueValue;
 
 implementation
 
-uses ComObj;
+uses ComObj, ChannelViewer;
 
 procedure BuildTranslatedContextValueTree(arr: TGlueContextValueArray;
   tree: TTreeNodes; node: TTreeNode);
@@ -241,6 +243,7 @@ procedure TForm1.btnInitClick(Sender: TObject);
 var
   inst: GlueInstance;
   cfg: GlueConfiguration;
+  appDef: GlueAppDefinition;
 begin
   if G42 <> nil then
   begin
@@ -269,6 +272,7 @@ begin
 
     ZeroMemory(@cfg, sizeof(cfg));
     cfg.LoggingConfigurationPath := 'GlueCOMDelphiLog.config';
+    cfg.AppDefinitionTitle := 'Glue Delphi 7 Sample';
     G42.OverrideConfiguration(cfg);
 
     // init and start the Glue42
@@ -285,6 +289,11 @@ begin
     // register VCL form window as Glue Window so it will become sticky,
     // participate in Glue Groups and consume Glue channels
     glueWindow := G42.RegisterGlueWindow(Self.Handle, Self);
+    ZeroMemory(@appDef, sizeof(appDef));
+    appDef.Name := 'GlueD7ChannelViewer';
+    appDef.title := 'D7 Channel Viewer';
+    appDef.Category := 'COM Apps';
+    G42.AppFactoryRegistry.RegisterAppFactory(appDef, Self);
 
     // change the Glue Window title
     glueWindow.SetTitle('Delphi Glue Window');
@@ -427,7 +436,8 @@ begin
       args := CreateContextValues_SA(AsGlueContextValueArray([
           CreateContextValue('Instrument',
             CreateComposite([CreateContextValue('Volume',
-                CreateValue(Integer(100 + System.Random(10000)))), CreateContextValue('InstrumentId',
+                CreateValue(Integer(100 + System.Random(10000)))),
+              CreateContextValue('InstrumentId',
                 CreateValue(CreateClassID))], false)),
           CreateContextValue('Price', CreateValue(System.Random)),
           CreateContextValue('Side', CreateValue('BUY'))]));
@@ -641,4 +651,18 @@ begin
   FRequestHandler := nil;
 end;
 
+function TForm1.CreateApp(const appDefName: WideString;
+  state: GlueValue; const announcer: IAppAnnouncer): HResult;
+var
+  cv : TForm2;
+begin
+  if appDefName = 'GlueD7ChannelViewer' then
+  begin
+    cv := TForm2.Create(self);
+    announcer.RegisterAppInstance(cv.Handle, cv);
+    Result := S_OK;
+  end
+  else
+    Result := E_FAIL;
+end;
 end.

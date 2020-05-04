@@ -12,7 +12,7 @@ unit GlueCOM_TLB;
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
-// File generated on 2020-03-02 8:50:47 PM from Type Library described below.
+// File generated on 2020-04-24 10:53:33 PM from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: A:\Work\stash\dot-net-glue-com\GlueCom\bin\Debug\GlueCOM.dll (1)
@@ -69,7 +69,7 @@ const
   DIID_IGlueEventSink: TGUID = '{0EE5A248-F02A-4551-8745-437F6AFAAB4D}';
   IID_IGlueContextBuilderCallback: TGUID = '{0856C290-92E8-49A3-ADD9-741E551BD70F}';
   IID_IGlueWindow: TGUID = '{2F432B71-D338-419B-B150-E5E111F3D9A3}';
-  CLASS_Glue42: TGUID = '{556D7D1B-7E89-454A-8575-85B1ABE35941}';
+  IID_IAppFactoryRegistry: TGUID = '{B1810DB3-167B-4FBD-8852-0481B0BBFDC4}';
   IID_IGlueServerSubscriptionCallback: TGUID = '{1CE0C9B4-C1D2-4F0D-A5A5-57EA027424BE}';
   IID_IGlueStream: TGUID = '{311F7E47-8BFD-4174-B493-8FA9F9192464}';
   IID_IGlueStreamBranch: TGUID = '{C770A188-815A-4D61-89BA-5F283F698A07}';
@@ -81,6 +81,10 @@ const
   IID_IGlueServerMethodResultCallback: TGUID = '{2497D4E6-C398-4DBB-904D-83B55F701E46}';
   IID_IGlueInvocationResultHandler: TGUID = '{3549297E-57A9-4F65-9183-D95232E55469}';
   IID_IGlueWindowEventHandler: TGUID = '{FBCB4411-153C-4AAC-8DC8-DB696C931FEB}';
+  CLASS_Glue42: TGUID = '{556D7D1B-7E89-454A-8575-85B1ABE35941}';
+  IID_IAppFactory: TGUID = '{505D3B9B-8ABD-4AC3-8EFE-66C64C372009}';
+  IID_IGlueApp: TGUID = '{1ADA0F8C-A888-45E7-B500-59AD176A690E}';
+  IID_IAppAnnouncer: TGUID = '{32EE037F-139B-4685-8BE1-AAC7A082507F}';
 
 // *********************************************************************//
 // Declaration of Enumerations defined in Type Library                    
@@ -177,6 +181,8 @@ type
   IGlueContextBuilderCallback = interface;
   IGlueWindow = interface;
   IGlueWindowDisp = dispinterface;
+  IAppFactoryRegistry = interface;
+  IAppFactoryRegistryDisp = dispinterface;
   IGlueServerSubscriptionCallback = interface;
   IGlueServerSubscriptionCallbackDisp = dispinterface;
   IGlueStream = interface;
@@ -194,6 +200,10 @@ type
   IGlueServerMethodResultCallbackDisp = dispinterface;
   IGlueInvocationResultHandler = interface;
   IGlueWindowEventHandler = interface;
+  IAppFactory = interface;
+  IGlueApp = interface;
+  IAppAnnouncer = interface;
+  IAppAnnouncerDisp = dispinterface;
 
 // *********************************************************************//
 // Declaration of CoClasses defined in Type Library                       
@@ -225,6 +235,9 @@ type
   GlueConfiguration = record
     LoggingConfigurationPath: WideString;
     GWUri: WideString;
+    AppDefinitionStartup: WideString;
+    AppDefinitionStartupArgs: WideString;
+    AppDefinitionTitle: WideString;
   end;
 
   GlueContext = record
@@ -275,6 +288,12 @@ type
   GlueContextValue = record
     Name: WideString;
     Value: GlueValue;
+  end;
+
+  GlueAppDefinition = record
+    Name: WideString;
+    title: WideString;
+    Category: WideString;
   end;
 
 
@@ -397,6 +416,8 @@ type
                                columnNames: PSafeArray; columnValidationTypes: PSafeArray; 
                                data: OleVariant); safecall;
     procedure Log(level: Byte; const Message: WideString); safecall;
+    function Get_AppFactoryRegistry: IAppFactoryRegistry; safecall;
+    property AppFactoryRegistry: IAppFactoryRegistry read Get_AppFactoryRegistry;
   end;
 
 // *********************************************************************//
@@ -530,6 +551,7 @@ type
                                columnNames: {??PSafeArray}OleVariant; 
                                columnValidationTypes: {??PSafeArray}OleVariant; data: OleVariant); dispid 1610743851;
     procedure Log(level: Byte; const Message: WideString); dispid 1610743852;
+    property AppFactoryRegistry: IAppFactoryRegistry readonly dispid 1610743853;
   end;
 
 // *********************************************************************//
@@ -733,6 +755,31 @@ type
     function GetChannelSupport: WordBool; dispid 1610743813;
     procedure SetChannelSupport(showLink: WordBool); dispid 1610743814;
     procedure Unregister; dispid 1610743815;
+  end;
+
+// *********************************************************************//
+// Interface: IAppFactoryRegistry
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {B1810DB3-167B-4FBD-8852-0481B0BBFDC4}
+// *********************************************************************//
+  IAppFactoryRegistry = interface(IDispatch)
+    ['{B1810DB3-167B-4FBD-8852-0481B0BBFDC4}']
+    procedure RegisterAppFactory(appDefinition: GlueAppDefinition; const factory: IAppFactory); safecall;
+    procedure RegisterAppInstance(const appDefName: WideString; const glueWindow: IGlueWindow; 
+                                  const glueApp: IGlueApp); safecall;
+  end;
+
+// *********************************************************************//
+// DispIntf:  IAppFactoryRegistryDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {B1810DB3-167B-4FBD-8852-0481B0BBFDC4}
+// *********************************************************************//
+  IAppFactoryRegistryDisp = dispinterface
+    ['{B1810DB3-167B-4FBD-8852-0481B0BBFDC4}']
+    procedure RegisterAppFactory(appDefinition: {??GlueAppDefinition}OleVariant; 
+                                 const factory: IAppFactory); dispid 1610743808;
+    procedure RegisterAppInstance(const appDefName: WideString; const glueWindow: IGlueWindow; 
+                                  const glueApp: IGlueApp); dispid 1610743809;
   end;
 
 // *********************************************************************//
@@ -945,6 +992,51 @@ type
   end;
 
 // *********************************************************************//
+// Interface: IAppFactory
+// Flags:     (256) OleAutomation
+// GUID:      {505D3B9B-8ABD-4AC3-8EFE-66C64C372009}
+// *********************************************************************//
+  IAppFactory = interface(IUnknown)
+    ['{505D3B9B-8ABD-4AC3-8EFE-66C64C372009}']
+    function CreateApp(const appDefName: WideString; state: GlueValue; 
+                       const announcer: IAppAnnouncer): HResult; stdcall;
+  end;
+
+// *********************************************************************//
+// Interface: IGlueApp
+// Flags:     (256) OleAutomation
+// GUID:      {1ADA0F8C-A888-45E7-B500-59AD176A690E}
+// *********************************************************************//
+  IGlueApp = interface(IUnknown)
+    ['{1ADA0F8C-A888-45E7-B500-59AD176A690E}']
+    function SaveState(out pRetVal: GlueValue): HResult; stdcall;
+    function Initialize(state: GlueValue; const glueWindow: IGlueWindow): HResult; stdcall;
+    function Shutdown: HResult; stdcall;
+  end;
+
+// *********************************************************************//
+// Interface: IAppAnnouncer
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {32EE037F-139B-4685-8BE1-AAC7A082507F}
+// *********************************************************************//
+  IAppAnnouncer = interface(IDispatch)
+    ['{32EE037F-139B-4685-8BE1-AAC7A082507F}']
+    function RegisterAppInstance(hwnd: Integer; const glueApp: IGlueApp): IGlueWindow; safecall;
+    procedure AnnouceAppCreationFailure(const error: WideString); safecall;
+  end;
+
+// *********************************************************************//
+// DispIntf:  IAppAnnouncerDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {32EE037F-139B-4685-8BE1-AAC7A082507F}
+// *********************************************************************//
+  IAppAnnouncerDisp = dispinterface
+    ['{32EE037F-139B-4685-8BE1-AAC7A082507F}']
+    function RegisterAppInstance(hwnd: Integer; const glueApp: IGlueApp): IGlueWindow; dispid 1610743808;
+    procedure AnnouceAppCreationFailure(const error: WideString); dispid 1610743809;
+  end;
+
+// *********************************************************************//
 // The Class CoGlue42 provides a Create and CreateRemote method to          
 // create instances of the default interface IGlue42 exposed by              
 // the CoClass Glue42. The functions are intended to be used by             
@@ -995,6 +1087,7 @@ type
   protected
     procedure InitServerData; override;
     procedure InvokeEvent(DispID: TDispID; var Params: TVariantArray); override;
+    function Get_AppFactoryRegistry: IAppFactoryRegistry;
   public
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
@@ -1114,6 +1207,7 @@ type
                                data: OleVariant);
     procedure Log(level: Byte; const Message: WideString);
     property DefaultInterface: IGlue42 read GetDefaultInterface;
+    property AppFactoryRegistry: IAppFactoryRegistry read Get_AppFactoryRegistry;
   published
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
     property Server: TGlue42Properties read GetServerProperties;
@@ -1137,6 +1231,7 @@ type
     function    GetDefaultInterface: IGlue42;
     constructor Create(AServer: TGlue42);
   protected
+    function Get_AppFactoryRegistry: IAppFactoryRegistry;
   public
     property DefaultInterface: IGlue42 read GetDefaultInterface;
   published
@@ -1267,6 +1362,11 @@ begin
                        Params[2] {const WideString});
 *)
   end; {case DispID}
+end;
+
+function TGlue42.Get_AppFactoryRegistry: IAppFactoryRegistry;
+begin
+    Result := DefaultInterface.AppFactoryRegistry;
 end;
 
 procedure TGlue42.OverrideConfiguration(configuration: GlueConfiguration);
@@ -1596,6 +1696,11 @@ end;
 function TGlue42Properties.GetDefaultInterface: IGlue42;
 begin
   Result := FServer.DefaultInterface;
+end;
+
+function TGlue42Properties.Get_AppFactoryRegistry: IAppFactoryRegistry;
+begin
+    Result := DefaultInterface.AppFactoryRegistry;
 end;
 
 {$ENDIF}

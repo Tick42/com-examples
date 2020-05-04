@@ -4,7 +4,8 @@ uses
   Forms,
   Main in 'Main.pas' {Form1},
   GlueHelper in 'GlueHelper.pas',
-  GlueCOM_TLB in 'GlueCOM_TLB.pas';
+  GlueCOM_TLB in 'GlueCOM_TLB.pas',
+  ChannelViewer in 'ChannelViewer.pas' {Form2};
 
 {$R *.res}
 
